@@ -12,7 +12,7 @@ import urllib.request
 import verifier
 from generate import NoRedirect
 
-RPC = "https://rpc.testnet.near.org"
+RPC = "https://test.rpc.fastnear.com"
 ACCOUNT = re.compile(r"[a-z0-9]+(?:[._-][a-z0-9]+)*\Z", re.ASCII)
 
 

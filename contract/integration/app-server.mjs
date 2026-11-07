@@ -72,11 +72,12 @@ try {
       if (url === '/api/challenges') result = await app.create(data);
       else if (url === '/api/generate') result = await app.generate();
       else {
-        const match = url.match(/^\/api\/challenges\/(\d+)\/(claim|verify|settle|refund|retry)$/);
+        const match = url.match(/^\/api\/challenges\/(\d+)\/(claim|verify|settle|refund|retry|receipts)$/);
         if (!match) return json(res, 404, {error:'Not found.'});
         const [, id, action] = match;
         if (action === 'claim') result = await app.claim(id, data);
         else if (action === 'verify') result = await app.verify(id);
+        else if (action === 'receipts') result = await app.receipts(id);
         else if (action === 'settle') result = await app.settle(id);
         else result = await app.recover(id, action);
       }
@@ -96,10 +97,10 @@ try {
     queue = queue.then(() => route(req,res,url)).catch(error => {if (!res.headersSent) json(res,400,{error:error.message}); else res.end();});
   });
   server.requestTimeout = 90000; server.headersTimeout = 10000;
-  server.on('error', async error => {console.error('Unable to listen: ' + error.code); await chain.close(); process.exit(1);});
+  server.on('error', async error => {console.error('Unable to listen: ' + error.code); await app.close(); await chain.close(); process.exit(1);});
   server.listen(port, '127.0.0.1', () => console.log(`PatchBounty ready at ${origin} (${chain.network}). Public run evidence: ${app.file}`));
   let stopping = false;
-  async function stop() { if (stopping) return; stopping = true; server.close(); await queue; await app.save(); await chain.close(); process.exit(0); }
+  async function stop() { if (stopping) return; stopping = true; server.close(); await queue; await app.save(); await app.close(); await chain.close(); process.exit(0); }
   process.on('SIGINT', stop); process.on('SIGTERM', stop);
 } catch (error) {
   console.error('Application startup failed: ' + error.message);

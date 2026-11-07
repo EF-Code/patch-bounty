@@ -67,3 +67,23 @@ test('altered evidence bytes fail closed and the evidence journal survives reloa
   assert.equal(saved.challenges[0].attempts[0].evidence.verification.decision,'eligible');
   assert.equal(chain.sent.length,2);
 });
+test('receipt recovery never broadcasts a second approval after a network error',async t=>{
+  const {app,chain}=await fixture(t);
+  await app.claim('0',{candidateRaw:'{ "user": "alice", "path": "/accounts/alice-backup/profile" }'});
+  const verified=await app.verify('0');
+  assert.equal(verified.attempts[0].candidateRaw,'{ "user": "alice", "path": "/accounts/alice-backup/profile" }');
+  const original=chain.send.bind(chain);let receipt;
+  chain.send=async(role,method,args,deposit,onSigned)=>{
+    const result=await original(role,method,args,deposit);
+    receipt={transaction:{hash:'signed-before-broadcast',signer_id:chain.roles.verifier,receiver_id:chain.contract,actions:[{FunctionCall:{method_name:method,args:Buffer.from(JSON.stringify(args)).toString('base64')}}]},status:{SuccessValue:''}};
+    await onSigned('signed-before-broadcast',chain.roles.verifier);
+    throw Error('Simulated RPC read failure after successful broadcast');
+  };
+  chain.lookup=async()=>receipt;
+  await assert.rejects(()=>app.settle('0'),/Simulated RPC/);
+  const count=chain.sent.length;
+  const item=await app.receipts('0');
+  assert.equal(item.snapshot.state.status,'paid');
+  assert.equal(item.attempts[0].settlement.recovered,true);
+  assert.equal(chain.sent.length,count);
+});

@@ -2,7 +2,15 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {Worker} from 'near-workspaces';
-import {connect, keyStores} from 'near-api-js';
+import {connect, keyStores, Account, utils} from 'near-api-js';
+
+class RecordedAccount extends Account {
+  async signTransaction(receiverId, actions) {
+    const signed = await super.signTransaction(receiverId, actions);
+    if (this.recordSigned) await this.recordSigned(utils.serialize.base_encode(Buffer.from(signed[0])), this.accountId);
+    return signed;
+  }
+}
 
 export const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 export const yocto = value => {
@@ -31,8 +39,8 @@ export async function createChain({wasm, configFile, repo}) {
       for (const name of ['creator', 'verifier', 'claimant']) {
         if (!(await store.getKey('testnet', config[name]))) throw Error('A dedicated testnet account key is missing.');
       }
-      near = await connect({networkId: 'testnet', nodeUrl: 'https://rpc.testnet.near.org', keyStore: store});
-      roles = Object.fromEntries(await Promise.all(['creator', 'verifier', 'claimant'].map(async r => [r, await near.account(config[r])])));
+      near = await connect({networkId: 'testnet', nodeUrl: 'https://test.rpc.fastnear.com', keyStore: store});
+      roles = Object.fromEntries(await Promise.all(['creator', 'verifier', 'claimant'].map(async r => [r, new RecordedAccount(near.connection, config[r])])));
       contract = {accountId: config.contract};
     } else {
       worker = await Worker.init();
@@ -42,6 +50,7 @@ export async function createChain({wasm, configFile, repo}) {
       contract = await root.devDeploy(wasm);
     }
     const provider = worker ? worker.provider : near.connection.provider;
+    if (!worker && (await provider.status()).chain_id !== 'testnet') throw Error('The configured RPC did not identify NEAR testnet.');
     const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
     async function waitFinal(result) {
       const hashes = [...new Set([result.transaction_outcome, ...result.receipts_outcome].map(o => o.block_hash))];
@@ -65,7 +74,7 @@ export async function createChain({wasm, configFile, repo}) {
     return {
       network, codeHash, contract: contract.accountId,
       roles: Object.fromEntries(Object.entries(roles).map(([r, a]) => [r, a.accountId])),
-      async send(role, method, args, deposit = 0n) {
+      async send(role, method, args, deposit = 0n, recordSigned) {
         await checkCode();
         const account = roles[role];
         let result, value;
@@ -74,13 +83,24 @@ export async function createChain({wasm, configFile, repo}) {
           if (!tx.succeeded) throw Error('Contract transaction failed: ' + tx.receiptFailureMessages.join('; '));
           result = tx.result; value = tx.parseResult();
         } else {
-          result = await account.functionCall({contractId: contract.accountId, methodName: method, args, gas: '100000000000000', attachedDeposit: deposit.toString()});
+          account.recordSigned = recordSigned;
+          try {
+            result = await account.functionCall({contractId: contract.accountId, methodName: method, args, gas: '100000000000000', attachedDeposit: deposit.toString()});
+          } catch (error) {
+            const txHash = error.context?.transactionHash;
+            if (!txHash) throw error;
+            try { result = await provider.txStatus(txHash, account.accountId, 'FINAL'); }
+            catch { throw Object.assign(Error('Transaction '+txHash+' may have been broadcast. Refresh chain state and recover its receipt before repeating this action.'), {transactionHash:txHash, signerId:account.accountId}); }
+          } finally { delete account.recordSigned; }
           if (typeof result.status === 'object' && result.status.Failure) throw Error('Contract transaction failed. Inspect the saved transaction.');
           value = JSON.parse(Buffer.from(result.status.SuccessValue || '', 'base64').toString() || 'null');
         }
-        await waitFinal(result);
+        try { await waitFinal(result); } catch {
+          throw Object.assign(Error('Transaction '+result.transaction.hash+' executed; finality could not be read. Refresh before repeating any action.'), {transaction:result});
+        }
         return {value, transaction: result};
       },
+      async lookup(txHash, signerId) { return provider.txStatus(txHash, signerId, 'FINAL'); },
       async view(id) {
         const result = await provider.query({request_type: 'call_function', account_id: contract.accountId, method_name: 'get_challenge', args_base64: Buffer.from(JSON.stringify({challenge_id:id})).toString('base64'), finality: 'final'});
         return {state: JSON.parse(Buffer.from(result.result).toString()), block: {block_hash:result.block_hash, block_height:result.block_height}};

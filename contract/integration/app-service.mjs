@@ -35,6 +35,18 @@ export class Application {
     this.sources = {};
     for (const name of ['verifier.py','generate.py','app_helper.py','contract/integration/app-service.mjs','contract/integration/app-chain.mjs','contract/integration/app-server.mjs','app/app.js','app/index.html','app/style.css']) this.sources[name] = hash(await fs.readFile(path.join(this.repo,name)));
     this.file = path.join(this.dataDir, this.chain.network === 'testnet' ? `testnet-${this.chain.contract}.json` : `${randomUUID()}.json`);
+    this.lockFile = this.file + '.lock';
+    try {
+      const lock = await fs.open(this.lockFile, 'wx', 0o600); await lock.writeFile(String(process.pid)); await lock.close();
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      const pid = Number(await fs.readFile(this.lockFile, 'utf8'));
+      if (!Number.isInteger(pid) || pid < 1) throw Error('An invalid operator lock exists; inspect it before starting.');
+      try { process.kill(pid, 0); throw Error('Another operator application is using this testnet journal.'); }
+      catch (check) { if (check.code !== 'ESRCH') throw check; }
+      await fs.unlink(this.lockFile);
+      const lock = await fs.open(this.lockFile, 'wx', 0o600); await lock.writeFile(String(process.pid)); await lock.close();
+    }
     try {
       this.data = JSON.parse(await fs.readFile(this.file, 'utf8'));
       if (this.data.contract !== this.chain.contract || this.data.codeHash !== this.chain.codeHash || JSON.stringify(this.data.roles) !== JSON.stringify(this.chain.roles)) throw Error('Saved run does not match the configured contract and roles.');
@@ -42,15 +54,17 @@ export class Application {
       if (error.code !== 'ENOENT') throw error;
       this.data = {format:'patchbounty-run-v1', id:randomUUID(), network:this.chain.network, contract:this.chain.contract, roles:this.chain.roles, codeHash:this.chain.codeHash, createdAt:new Date().toISOString(), application_sources:this.sources, challenges:[], events:[]};
     }
+    this.event('application_started', {application_sources:this.sources});
     await this.save();
     return this;
   }
+  async close() { await fs.unlink(this.lockFile).catch(() => {}); }
   async save() {
     const temp = this.file + '.tmp';
     await fs.writeFile(temp, JSON.stringify(this.data, null, 2) + '\n', {mode:0o600});
     await fs.rename(temp, this.file);
   }
-  event(action, extra = {}) { this.data.events.push({time:new Date().toISOString(), action, ...extra}); }
+  event(action, extra = {}) { this.data.events.push({time:new Date().toISOString(), ...extra, action}); }
   challenge(id) {
     const item = this.data.challenges.find(c => c.id === id);
     if (!item) throw Error('Unknown challenge in this run.');
@@ -68,24 +82,30 @@ export class Application {
     return {network:this.chain.network, contract:this.chain.contract, roles:this.chain.roles, runId:this.data.id, codeHash:this.chain.codeHash, specification:this.spec, aiAvailable:Boolean(process.env.NEAR_AI_API_KEY), claimantBalance:await this.chain.balance(), ...{challenges:this.data.challenges}};
   }
   async transaction(action, role, method, args, deposit = 0n) {
-    this.event('transaction_requested', {action, role, method, args, deposit:deposit.toString()});
+    this.event('transaction_requested', {operation:action, role, method, args, deposit:deposit.toString()});
     await this.save();
     try {
-      const result = await this.chain.send(role, method, args, deposit);
-      this.event('transaction_completed', {action, transaction:result.transaction});
+      const result = await this.chain.send(role, method, args, deposit, async (transactionHash, signerId) => {
+        this.event('transaction_signed', {operation:action, role, method, args, transactionHash, signerId}); await this.save();
+      });
+      this.event('transaction_completed', {operation:action, transaction:result.transaction});
       await this.save();
       return result;
     } catch (error) {
-      this.event('transaction_error', {action, error:error.message});
+      this.event('transaction_error', {operation:action, role, method, args, error:error.message, transaction:error.transaction, transactionHash:error.transactionHash, signerId:error.signerId});
       await this.save();
       throw error;
     }
   }
   async generate() {
-    const result = await helper(this.repo, this.python, 'generate');
-    this.event('ai_candidate_generated', result);
-    await this.save();
-    return result.candidate;
+    try {
+      const result = await helper(this.repo, this.python, 'generate');
+      this.event('ai_candidate_generated', result);
+      await this.save();
+      return result.candidate;
+    } catch (error) {
+      this.event('ai_generation_error', {error:error.message}); await this.save(); throw error;
+    }
   }
   async create(body) {
     if (typeof body.title !== 'string' || !body.title.trim() || body.title.length > 100) throw Error('Give the challenge a title of 1–100 characters.');
@@ -155,6 +175,22 @@ export class Application {
     const tx = await this.transaction('settle', 'verifier', method, args);
     attempt.settlement = {method, transaction:tx.transaction, balanceBefore:attempt.balanceBefore, balanceAfter:await this.chain.balance()};
     await this.refresh(item); await this.save(); return item;
+  }
+  async receipts(id) {
+    const item = await this.refresh(this.challenge(id));
+    for (const attempt of item.attempts.filter(a => a.evidence && !a.settlement && a.balanceBefore)) {
+      const event = [...this.data.events].reverse().find(e => e.action === 'transaction_signed' && e.args?.challenge_id === id && e.args?.claim_id === attempt.claimId && ['approve_claim','reject_claim'].includes(e.method));
+      if (!event) continue;
+      const tx = await this.chain.lookup(event.transactionHash, event.signerId);
+      const call = tx.transaction.actions[0]?.FunctionCall;
+      if (tx.transaction.signer_id !== this.chain.roles.verifier || tx.transaction.receiver_id !== this.chain.contract || call?.method_name !== event.method || tx.status?.Failure) throw Error('Recovered receipt does not match the requested verifier action.');
+      const args = JSON.parse(Buffer.from(call.args,'base64').toString());
+      if (args.challenge_id !== id || args.claim_id !== attempt.claimId) throw Error('Recovered claim identifiers do not match.');
+      if (event.method === 'approve_claim' && (args.evidence_sha256 !== attempt.evidence_sha256 || args.candidate_sha256 !== attempt.candidate_sha256)) throw Error('Recovered evidence identifiers do not match.');
+      attempt.settlement = {method:event.method, transaction:tx, balanceBefore:attempt.balanceBefore, balanceAfter:await this.chain.balance(), recovered:true};
+      this.event('receipts_recovered', {challenge:id, claimId:attempt.claimId, transaction:tx});
+    }
+    await this.save(); return item;
   }
   async recover(id, action) {
     const item = await this.refresh(this.challenge(id));

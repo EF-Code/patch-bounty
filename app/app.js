@@ -50,6 +50,7 @@ function render() {
     } else content+='<div class="actions"><button class="primary" id="verify">Run sandboxed verifier</button></div><p class="muted">No settlement is available until the verifier produces an eligible or ineligible result.</p>';
     content+='</section>';
   }
+  if (state.status==='paid' && current && !current.settlement) content+='<section class="card"><h3>Recover the completed transaction receipt</h3><p class="muted">The chain reports paid. No second approval will be sent. Use the signed transaction journal to recover its receipt after a network interruption.</p><button id="receipts" class="secondary">Recover receipts</button></section>';
   if (state.status==='paid') content+='<section class="card"><p class="step">03 / Settled</p><h3>Reward paid to the recorded claimant</h3><p class="muted">The contract reports paid after its transfer callback. The same approval cannot pay twice. Inspect the transaction receipts and the balance change below.</p></section>';
   if (state.status==='refunded') content+='<section class="card"><h3>Reward refunded to the creator</h3><p class="muted">The contract completed its refund callback. The storage allowance remains with the contract.</p></section>';
   if (state.status==='approved') content+='<section class="card"><h3>Payout transfer failed</h3><p class="muted">The claim remains approved. Retry transfers only to the same recorded claimant.</p><button id="retry" class="secondary">Retry payout</button></section>';
@@ -67,7 +68,7 @@ function render() {
     lock(true);notice('Requesting a synthetic NEAR AI candidate. This may take up to a minute…','working');
     api('/api/generate',{}).then(candidate=>{$('#candidate').value=JSON.stringify(candidate,null,2);notice('Candidate generated. Review it before submitting; no claim or payment was made.');}).catch(error=>notice(error.message,'error')).finally(()=>{lock(false);if ($('#ai')) $('#ai').disabled=!session.aiAvailable;});
   };
-  for (const [id,label] of [['verify','Running three pinned revisions inside the sandbox…'],['settle','Signing the verifier decision and waiting for transfer receipts…'],['refund','Refunding the expired reward…'],['retry','Retrying the approved payout…']]) {
+  for (const [id,label] of [['receipts','Recovering the signed transaction receipt…'],['verify','Running three pinned revisions inside the sandbox…'],['settle','Signing the verifier decision and waiting for transfer receipts…'],['refund','Refunding the expired reward…'],['retry','Retrying the approved payout…']]) {
     if ($('#'+id)) $('#'+id).onclick=()=>action(label,()=>api(`/api/challenges/${item.id}/${id}`,{}));
   }
   if (busy) lock(true);
