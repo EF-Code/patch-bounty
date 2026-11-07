@@ -8,6 +8,8 @@ The [testnet demonstration](demo/testnet-20261105/README.md) identifies the depl
 
 For a guided view of those recorded cases, open [the offline walkthrough](demo/index.html) in a browser. Select **Benign input** to see the rejected case, then **Qualifying counterexample** to see why the incomplete patch fails. The settlement panel links to the separately recorded testnet approval and replay rejection. It is a static evidence walkthrough, not a live contract interface.
 
+A [short demo recording and draft post](demo/VIDEO.md) show the same saved cases and the recorded payout.
+
 ## Run the local verifier
 
 Prerequisites: Linux, Python 3.10 or newer, and `bwrap` (Bubblewrap) with unprivileged user and network namespaces enabled. The verifier requires `/usr`, `/lib`, and `/lib64` and executes only the three pinned Python fixtures. It does not accept submitted code. On systems that disallow the required namespaces, it fails closed rather than running on the host.
