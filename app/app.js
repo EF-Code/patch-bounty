@@ -2,6 +2,7 @@
 const $ = selector => document.querySelector(selector);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const near = amount => { const n = BigInt(amount || '0'); const fraction = (n % 10n**24n).toString().padStart(24,'0').slice(0,6).replace(/0+$/,''); return `${n / 10n**24n}${fraction ? '.'+fraction : ''}`; };
+const emptyDetail = $('#detail').innerHTML;
 let session, selected, busy = false;
 function notice(message, type='success') { const node = $('#notice'); node.className=type; node.textContent=message; }
 function lock(value) { busy=value; document.querySelectorAll('button').forEach(b => { b.disabled=value || (b.id === 'ai' && !session?.aiAvailable); }); }
@@ -31,7 +32,7 @@ function render() {
   $('#challenges').innerHTML=session.challenges.length ? session.challenges.map(c => `<button class="challenge" data-select="${esc(c.id)}" aria-current="${c.id===selected}"><strong>${esc(c.title)}</strong><small><span>#${esc(c.id)} · ${esc(c.snapshot.state.status)}</span><span>${esc(near(c.snapshot.state.reward))} NEAR</span></small></button>`).join('') : '<p class="muted">No challenges yet. Create one to fund your first reward.</p>';
   document.querySelectorAll('[data-select]').forEach(b => b.onclick=()=> {selected=b.dataset.select;render();});
   const item=session.challenges.find(c=>c.id===selected);
-  if (!item) return;
+  if (!item) { $('#detail').innerHTML = emptyDetail; return; }
   const state=item.snapshot.state;
   const current=state.claim && item.attempts.find(a=>a.claimId===state.claim.id);
   const deadline=new Date(Number(BigInt(state.deadline_ns)/1000000n));

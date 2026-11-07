@@ -8,7 +8,7 @@
     "app": "bash ../../scripts/start.sh",
     "test:app": "node --test app-service.test.mjs",
     "test:browser": "node app-browser.test.mjs",
-    "provision:testnet": "node provision-testnet.mjs --testnet-spending-authorized"
+    "provision:testnet": "bash ../../scripts/provision-testnet.sh"
   },
   "dependencies": {
     "near-api-js": "5.1.1",

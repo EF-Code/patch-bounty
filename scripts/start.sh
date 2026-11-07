@@ -2,9 +2,7 @@
 set -euo pipefail
 repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$repo_dir"
-if [[ -z ${PATCHBOUNTY_PYTHON:-} ]]; then
-  if [[ -x "$HOME/.venv/bin/python" ]]; then export PATCHBOUNTY_PYTHON="$HOME/.venv/bin/python"; else export PATCHBOUNTY_PYTHON=python3; fi
-fi
+source "$repo_dir/scripts/runtime.sh"
 if ! command -v node >/dev/null || [[ ! -d contract/integration/node_modules ]]; then
   echo 'Install Node.js and run scripts/setup.sh first.' >&2; exit 1
 fi
