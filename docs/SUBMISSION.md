@@ -4,7 +4,7 @@ This is a preparation record, not a submission. The live [organizer instructions
 
 ## Evidence for a reviewer
 
-- [Current implementation on `work`](https://github.com/EF-Code/patch-bounty/tree/work) and [changes from the initial concept on `main`](https://github.com/EF-Code/patch-bounty/compare/main...work). The repository is public; at the time of this check, `main` was still the default branch, so judges need the `work` link.
+- [Public repository](https://github.com/EF-Code/patch-bounty), [development branch](https://github.com/EF-Code/patch-bounty/tree/work), and [changes from the initial concept commit](https://github.com/EF-Code/patch-bounty/compare/6dad103...main).
 - [Local quickstart](QUICKSTART.md), [interactive saved-evidence walkthrough](../demo/index.html), and [demo recording](../demo/patchbounty-demo.mp4).
 - [Recorded testnet evidence](../demo/testnet-20261105/README.md), including the approval, replay rejection and final state. A later RPC check found the recorded code hash and paid state still matched.
 - [Live synthetic NEAR AI candidate](../demo/near-ai-20261107/README.md), verified separately by the deterministic fixture verifier. This is separate from the earlier deterministic-generator payout demo.
@@ -23,6 +23,5 @@ This is a preparation record, not a submission. The live [organizer instructions
 1. Review the video and organizer rules, and personally publish the required public X post with the video attached, including `@NEARProtocol` and `#NEARHackathon`. A [post draft](../demo/VIDEO.md) is available. Supply the post URL for the submission.
 2. Choose the project name, team lead name, contact email, team size, track IDs, public repository link, mainnet prize account, and the final description. Do not include private keys. The event permits one submission per project; use the organizer's change-request process if already submitted.
 3. Review the exact contact notice and the full payload. The organizer instructions require the human's explicit confirmation of that exact payload before the API submission; consent must not be assumed. No personal details or payload should be committed to this repository.
-4. If possible, set `work` as the GitHub default branch so the repository root opens the current implementation. The connected GitHub integration could push the branch but lacked administration permission to change this setting.
 
 The project is a narrow, unaudited testnet prototype. Do not describe its AI request as verified private inference, the sandbox as suitable for arbitrary hostile code, or the escrow as a production deployment. The contract's full-access key permits redeployment, and its verifier is trusted.
