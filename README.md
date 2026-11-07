@@ -44,6 +44,7 @@ The AI proposes tests; it does not decide whether to pay. The first implementati
 
 ## Build from here
 
+- [Local quickstart](docs/QUICKSTART.md)
 - [Product and demo scope](docs/PRODUCT.md)
 - [Architecture and trust boundaries](docs/ARCHITECTURE.md)
 - [Implementation roadmap and acceptance checks](docs/ROADMAP.md)

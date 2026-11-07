@@ -26,7 +26,7 @@
 ## 4. Reviewer experience
 
 - [x] Show challenge details, candidate input, exact revisions, evidence, verifier decision, and the recorded settlement state in a static review page.
-- [ ] Provide a clean-environment quickstart with explicit prerequisites and expected output.
+- [ ] Validate the [local quickstart](QUICKSTART.md) on a newly provisioned environment; it has been exercised from a clean checkout in an existing environment.
 - [ ] Record a complete demo including both rejection and accepted payout.
 - [ ] Confirm applicable hackathon instructions and track choices before submission.
 
