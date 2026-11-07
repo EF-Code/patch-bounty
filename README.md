@@ -6,6 +6,8 @@ PatchBounty is a proposed marketplace for challenging security patches with repr
 
 The [testnet demonstration](demo/testnet-20261105/README.md) identifies the deployed contract, transactions and saved evidence. It uses faucet-funded testnet NEAR and a deterministic generator; it is not a production deployment.
 
+For a guided view of those recorded cases, open [the offline walkthrough](demo/index.html) in a browser. Select **Benign input** to see the rejected case, then **Qualifying counterexample** to see why the incomplete patch fails. The settlement panel links to the separately recorded testnet approval and replay rejection. It is a static evidence walkthrough, not a live contract interface.
+
 ## Run the local verifier
 
 Prerequisites: Linux, Python 3.10 or newer, and `bwrap` (Bubblewrap) with unprivileged user and network namespaces enabled. The verifier requires `/usr`, `/lib`, and `/lib64` and executes only the three pinned Python fixtures. It does not accept submitted code. On systems that disallow the required namespaces, it fails closed rather than running on the host.

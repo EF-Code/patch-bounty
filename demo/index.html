@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PatchBounty — recorded testnet walkthrough</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#101820;color:#e8f1ed}
+*{box-sizing:border-box}body{margin:0}a{color:#a6ecd2}a:focus-visible,button:focus-visible{outline:3px solid #f9c975;outline-offset:3px}
+.shell{max-width:1100px;margin:auto;padding:32px 26px 56px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#a3b8ae}.brand{font-weight:800;color:#e8f1ed;font-size:16px;letter-spacing:.12em}.pill{border:1px solid #3c6152;border-radius:99px;padding:7px 11px;color:#a6ecd2;font-size:11px;white-space:nowrap}
+h1{font-size:clamp(32px,5vw,58px);line-height:1.04;letter-spacing:-.045em;max-width:800px;margin:40px 0 14px}h1 span{color:#a6ecd2}.intro{color:#b0c3ba;font-size:17px;line-height:1.55;max-width:740px;margin:0 0 26px}
+.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}.card{border:1px solid #30473e;background:#19271f;border-radius:15px;padding:22px}.eyebrow{color:#9fbcad;font-size:11px;font-weight:750;letter-spacing:.13em;text-transform:uppercase;margin:0 0 10px}h2{font-size:20px;margin:0 0 12px}p{line-height:1.5}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.tabs button{font:inherit;font-size:13px;font-weight:700;border:1px solid #496156;border-radius:8px;color:#d5e6de;background:transparent;padding:9px 13px;cursor:pointer}.tabs button[aria-pressed=true]{background:#a6ecd2;color:#10221a;border-color:#a6ecd2}
+.candidate{background:#111d17;border:1px solid #2c4437;padding:12px;border-radius:8px;font:13px/1.6 ui-monospace,monospace;overflow-wrap:anywhere}.result{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0 8px;font-weight:700}.badge{border-radius:6px;padding:5px 9px;background:#4a3930;color:#ffd1ad;font-size:12px}.badge.good{background:#264b37;color:#b2f4c7}.rows{border-top:1px solid #344b3e}.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #344b3e;font-size:13px}.row strong{color:#cfe9d8}.row .deny{color:#a6ecd2}.muted{color:#a7bcb0;font-size:13px}.amount{font-size:38px;font-weight:800;letter-spacing:-.04em;margin:12px 0 0}.detail{font-size:13px;color:#bad1c2}.links{display:flex;flex-wrap:wrap;gap:14px;margin-top:18px;font-size:13px}.foot{color:#a7bcb0;font-size:12px;line-height:1.6;margin-top:20px}.foot a{white-space:nowrap}[hidden]{display:none!important}
+@media(max-width:700px){.shell{padding:22px 18px 40px}h1{margin-top:30px}.grid{grid-template-columns:1fr}.top{align-items:flex-start}.pill{white-space:normal;text-align:right}.card{padding:18px}}
+</style>
+</head>
+<body><main class="shell">
+<div class="top"><div class="brand">PATCHBOUNTY</div><div class="pill">Recorded evidence · NEAR testnet</div></div>
+<h1>Can a patch <span>withstand a challenge?</span></h1>
+<p class="intro">A researcher proposes an input. A deterministic verifier checks three pinned revisions; an authorized verifier can then settle a reward on NEAR testnet.</p>
+<div class="grid">
+<section class="card" aria-labelledby="challenge-title">
+<p class="eyebrow">01 / Try the recorded cases</p><h2 id="challenge-title">Synthetic authorization challenge</h2>
+<div class="tabs" aria-label="Recorded cases"><button type="button" id="benign-tab" aria-pressed="true">Benign input</button><button type="button" id="qualifying-tab" aria-pressed="false">Qualifying counterexample</button></div>
+<div id="benign"><div class="candidate">user: alice<br>path: /accounts/alice/profile</div><div class="result"><span>Verifier decision</span><span class="badge">NOT ELIGIBLE</span></div><div class="rows"><div class="row"><span>Vulnerable revision</span><strong>allowed</strong></div><div class="row"><span>Incomplete patch</span><strong>allowed</strong></div><div class="row"><span>Corrected patch</span><strong>allowed</strong></div></div><p class="muted">Alice is accessing her own profile; this is not a counterexample.</p><a href="testnet-20261105/benign-evidence.json">Inspect benign evidence →</a></div>
+<div id="qualifying" hidden><div class="candidate">user: alice<br>path: /accounts/alice-backup/profile</div><div class="result"><span>Verifier decision</span><span class="badge good">ELIGIBLE</span></div><div class="rows"><div class="row"><span>Vulnerable revision</span><strong>allowed</strong></div><div class="row"><span>Incomplete patch</span><strong>allowed</strong></div><div class="row"><span>Corrected patch</span><strong class="deny">denied</strong></div></div><p class="muted">A different account passes the incomplete prefix check, but fails the corrected check.</p><a href="testnet-20261105/qualifying-evidence.json">Inspect qualifying evidence →</a></div>
+</section>
+<section class="card" aria-labelledby="settlement-title"><p class="eyebrow">02 / Recorded settlement</p><h2 id="settlement-title">A testnet reward paid once</h2><p class="muted">For challenge 0, the authorized verifier rejected the benign claim and approved the qualifying claim.</p><div class="amount">0.08 NEAR</div><div class="detail">Testnet reward · finalized state: <strong>paid</strong></div><p class="muted">The recorded claimant balance increased by 0.08 NEAR. A repeat approval failed. The finalized state was captured at block 276408630.</p><div class="links"><a href="https://explorer.testnet.near.org/transactions/4Dhy6DQwyDUTrtCBHqe2mCsBon3nN1oueoZdomfW5HPk">Approval transaction ↗</a><a href="https://explorer.testnet.near.org/transactions/FM33aFD2hYX1pmGZmYBX4JnTFNtoQKYXmYdNKCHcj9G4">Replay rejection ↗</a><a href="testnet-20261105/final-challenge.json">Final state →</a></div></section>
+</div>
+<p class="foot">This is a static walkthrough of saved November 2026 evidence, not a live chain view. The fixture is synthetic; the contract and sandbox are not production-audited. AI can propose inputs but cannot authorize payment. <a href="testnet-20261105/README.md">Evidence and limitations →</a> · <a href="../docs/QUICKSTART.md">Run the verifier →</a></p>
+</main>
+<script>
+const buttons = [document.getElementById('benign-tab'), document.getElementById('qualifying-tab')];
+const panels = [document.getElementById('benign'), document.getElementById('qualifying')];
+buttons.forEach((button, index) => button.addEventListener('click', () => {
+  buttons.forEach((item, i) => item.setAttribute('aria-pressed', String(i === index)));
+  panels.forEach((panel, i) => { panel.hidden = i !== index; });
+}));
+</script>
+</body></html>
