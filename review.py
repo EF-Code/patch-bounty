@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render a standalone reviewer page from a saved settlement evidence file."""
+"""Render a standalone reviewer page from local or settlement evidence."""
 import argparse
 import hashlib
 import html
@@ -16,10 +16,22 @@ def render(raw):
     if len(raw) > 2_000_000:
         raise ValueError("evidence file is too large")
     data = json.loads(raw)
-    if data.get("format") != "patchbounty-evidence-v1":
+    if not isinstance(data, dict):
         raise ValueError("unsupported evidence format")
-    result = data["verification"]
-    chain = data["chain_challenge"]
+    if data.get("format") == "patchbounty-evidence-v1":
+        result = data["verification"]
+        chain = data["chain_challenge"]
+        chain_section = """<section class="card"><h2>Chain snapshot</h2><p>Network: {network} · Contract: <code>{contract}</code> · Challenge: {challenge}</p>
+<p>Claimant: <code>{claimant}</code> · Verifier: <code>{verifier}</code></p>
+<p>Recorded state at block {block}: <strong>{status}</strong>. Check the chain for current settlement status.</p></section>""".format(
+            network=esc(data["network"]), contract=esc(data["contract"]), challenge=esc(data["challenge_id"]),
+            claimant=esc(chain["claim"]["claimant"]), verifier=esc(chain["verifier"]),
+            block=esc(data["chain_block"]["block_height"]), status=esc(chain["status"]))
+    elif data.get("challenge") == "synthetic-account-prefix-v1" and data.get("decision") in ("eligible", "not_eligible"):
+        result = data
+        chain_section = '<section class="card"><h2>Settlement</h2><p>Local verification only; no chain state is included.</p></section>'
+    else:
+        raise ValueError("unsupported evidence format")
     revisions = result["revisions"]
     rows = "".join(
         "<tr><th>" + esc(name) + "</th><td>" + esc(revisions[name]["allowed"]) +
@@ -41,16 +53,11 @@ td,th{{padding:.6rem;border-bottom:1px solid #e5eaf0;vertical-align:top}}.notice
 <section class="card"><h2>Candidate</h2><pre>{candidate}</pre><p>Canonical SHA-256: <code>{candidate_hash}</code></p></section>
 <section class="card"><h2>Revision outcomes</h2><table><tr><th>Revision</th><th>Allowed</th><th>Fixture SHA-256</th></tr>{rows}</table>
 <p>Verifier SHA-256: <code>{verifier_hash}</code></p></section>
-<section class="card"><h2>Chain snapshot</h2><p>Network: {network} · Contract: <code>{contract}</code> · Challenge: {challenge}</p>
-<p>Claimant: <code>{claimant}</code> · Verifier: <code>{verifier}</code></p>
-<p>Recorded state at block {block}: <strong>{status}</strong>. Check the chain for current settlement status.</p></section>
+{chain_section}
 <section class="card"><h2>Evidence</h2><p>File SHA-256: <code>{file_hash}</code></p><details><summary>Inspect complete evidence JSON</summary><pre>{raw}</pre></details></section>
 </body></html>""".format(decision=esc(result["decision"]), candidate=esc(json.dumps(result["candidate"], indent=2)),
                          candidate_hash=esc(result["candidate_sha256"]), rows=rows,
-                         verifier_hash=esc(result["verifier_sha256"]), network=esc(data["network"]),
-                         contract=esc(data["contract"]), challenge=esc(data["challenge_id"]),
-                         claimant=esc(chain["claim"]["claimant"]), verifier=esc(chain["verifier"]),
-                         block=esc(data["chain_block"]["block_height"]), status=esc(chain["status"]),
+                         verifier_hash=esc(result["verifier_sha256"]), chain_section=chain_section,
                          file_hash=hashlib.sha256(raw).hexdigest(), raw=raw_display)
 
 

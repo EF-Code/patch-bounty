@@ -22,6 +22,8 @@ The first candidate returns `eligible`: the vulnerable and incomplete revisions 
 
 The runner removes inherited environment variables, disables network access in a namespace, mounts the Python runtime and system libraries read-only, uses a temporary filesystem, and applies CPU, memory, output-file and wall-time bounds. These controls reduce risk for this fixed synthetic fixture; they are not a security guarantee for arbitrary hostile code. See [the challenge specification](docs/CHALLENGE.md) for the predicate and evidence limitations.
 
+To create a standalone review of a successful local run, save the verifier output and render it with `python3 review.py /tmp/patchbounty-verification.json /tmp/patchbounty-review.html`. The output path must be new. This local review has no chain state; the same tool also renders the settlement evidence described in the testnet walkthrough.
+
 The contract's local tests run with `cargo test --manifest-path contract/Cargo.toml --locked`. The [testnet walkthrough](docs/TESTNET.md) also includes the pinned Wasm build and local NEAR sandbox integration test. The local test uses simulated funds and is not evidence of a testnet payout.
 
 ## The first demo

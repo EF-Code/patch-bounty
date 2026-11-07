@@ -22,3 +22,18 @@ class ReviewTests(unittest.TestCase):
     def test_rejects_unsupported_evidence(self):
         with self.assertRaises(ValueError):
             review.render(b'{"format":"unknown"}')
+
+    def test_local_evidence_is_labeled_and_escaped(self):
+        evidence = {"challenge": "synthetic-account-prefix-v1", "decision": "not_eligible",
+                    "candidate": {"user": "<script>alert(1)</script>"},
+                    "candidate_sha256": "a" * 64, "verifier_sha256": "b" * 64,
+                    "revisions": {name: {"allowed": False, "sha256": "c" * 64}
+                                  for name in ("vulnerable", "incomplete", "corrected")}}
+        page = review.render(json.dumps(evidence).encode())
+        self.assertIn("Local verification only; no chain state is included.", page)
+        self.assertIn("&lt;script&gt;", page)
+        self.assertNotIn("<script>alert(1)</script>", page)
+
+    def test_local_error_evidence_is_not_shown_as_a_verdict(self):
+        with self.assertRaises(ValueError):
+            review.render(b'{"challenge":"synthetic-account-prefix-v1","decision":"error"}')
