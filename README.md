@@ -2,7 +2,7 @@
 
 PatchBounty is a proposed marketplace for challenging security patches with reproducible counterexamples. A maintainer funds a challenge, independent agents look for a test that breaks the patch, and a verifier checks the result before an escrow releases a reward.
 
-**Status: testnet prototype.** A synthetic fixture, deterministic sandboxed verifier, NEAR escrow contract, candidate generators, and evidence review tools are implemented. A real testnet payout, replay rejection, failed-transfer retry and expiry refund have been verified. NEAR AI Cloud inference has not been tested with an account.
+**Status: testnet prototype.** A synthetic fixture, deterministic sandboxed verifier, NEAR escrow contract, candidate generators, and evidence review tools are implemented. A real testnet payout, replay rejection, failed-transfer retry and expiry refund have been verified. A live NEAR AI Cloud request produced a candidate accepted by the deterministic verifier; inference attestation and response signatures were not verified. See the [run evidence](demo/near-ai-20261107/README.md).
 
 The [testnet demonstration](demo/testnet-20261105/README.md) identifies the deployed contract, transactions and saved evidence. It uses faucet-funded testnet NEAR and a deterministic generator; it is not a production deployment.
 
