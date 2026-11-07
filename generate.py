@@ -46,7 +46,11 @@ def near_ai():
         if not isinstance(content, str):
             raise ValueError("response content is not text")
         return parse_candidate(content.encode("utf-8"))
-    except (urllib.error.URLError, TimeoutError, OSError, KeyError, IndexError, TypeError, ValueError) as exc:
+    except urllib.error.HTTPError as exc:
+        # Do not print the response body, request headers, or URL: provider errors
+        # can contain sensitive data. The status is enough to guide the operator.
+        raise VerificationError("NEAR AI request failed with HTTP status %d" % exc.code) from None
+    except (urllib.error.URLError, TimeoutError, OSError, KeyError, IndexError, TypeError, ValueError, RecursionError) as exc:
         raise VerificationError("NEAR AI request or response failed: " + type(exc).__name__) from None
 
 

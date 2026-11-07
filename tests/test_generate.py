@@ -1,6 +1,7 @@
 import io
 import json
 import unittest
+import urllib.error
 from unittest import mock
 
 import generate
@@ -38,3 +39,14 @@ class GeneratorTests(unittest.TestCase):
             with mock.patch.object(generate.urllib.request, "build_opener", return_value=opener):
                 with self.assertRaises(verifier.VerificationError):
                     generate.near_ai()
+
+    def test_provider_http_error_reports_status_without_body_or_credentials(self):
+        error = urllib.error.HTTPError(generate.GATEWAY, 429, "rate limited", {},
+                                       io.BytesIO(b"sensitive provider response"))
+        opener = mock.Mock()
+        opener.open.side_effect = error
+        with mock.patch.dict(generate.os.environ, {"NEAR_AI_API_KEY": "secret-key"}, clear=True):
+            with mock.patch.object(generate.urllib.request, "build_opener", return_value=opener):
+                with self.assertRaises(verifier.VerificationError) as caught:
+                    generate.near_ai()
+        self.assertEqual(str(caught.exception), "NEAR AI request failed with HTTP status 429")
