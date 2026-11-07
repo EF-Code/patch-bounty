@@ -1,0 +1,11 @@
+# Application testnet verification — 2026-11-07
+
+The complete application was exercised against the dedicated testnet contract `contract.pb-app-1794070046101.testnet`, deployed from the pinned local build with Wasm SHA-256 `754ea3374fb426381300768cb92d691853fc48ba92b1ad328daf14d21e6cdcd1`. These accounts were faucet-funded; no mainnet funds or purchased credits were used for deployment or settlement. Private account keys remain outside the repository.
+
+The public [run journal](run.json) records challenge creation, claim data, independent verification, finalized chain snapshots, signatures and transaction receipts:
+
+- Challenge `0` expired and its reward was [refunded](https://explorer.testnet.near.org/transactions/4s64XD8RjyXTu9B3wBqnNhQL8RwVGqvLMtB4myaV8Vn9).
+- Challenge `1` exercised the benign [rejection](https://explorer.testnet.near.org/transactions/5FH9CGb6rBtotsm9DL2RDUm6p7tKnCPPHBoEjLRaTrMr) and a qualifying approval. During that approval, the old `rpc.testnet.near.org` endpoint returned a deprecation/rate-limit error after the transaction was broadcast. A later finalized query found it paid. That earlier application version did not preserve the approval receipt; the journal retains that error rather than fabricating a successful response.
+- The application was updated to use the documented `test.rpc.fastnear.com` provider, journal signed hashes before broadcasting, and recover receipts without resending an approval. Challenge `2` then exercised the updated application: its [approval](https://explorer.testnet.near.org/transactions/Fj6tDVe7s3uJ1K4gnouY1uZEhVq27uVgabm8n9ycuEvQ) completed, the contract reported `paid`, and the claimant balance increased by exactly 0.001 NEAR. Its exact candidate bytes, verification evidence and complete receipt are saved in the journal. A service test independently exercises the interruption-and-recovery path and asserts that recovery never broadcasts another approval.
+
+The run contains source fingerprints for the application versions used during testing. It is unsigned local evidence, and the public RPC is trusted for chain state. The contract retains a full-access key and can be redeployed. This is a non-production demonstration; see [application instructions](../../docs/APPLICATION.md) and [escrow limitations](../../docs/ESCROW.md).
