@@ -1,0 +1,23 @@
+# NEAR AI evidence and privacy
+
+The implemented generator sends only the fixed synthetic prompt in `generate.py` to the NEAR AI Cloud gateway. It uses an environment-provided API key, validates the returned content as candidate data, and never supplies a payout decision. The verifier independently checks the candidate. The [live run](../demo/near-ai-20261107/README.md) demonstrated this API path; it did not establish private inference.
+
+## Checks performed today
+
+The client uses normal HTTPS certificate validation, refuses redirects, limits response size and request time, and validates the candidate schema. It does **not** request or verify hardware quotes, event logs, measurements, model evidence, TLS-to-attestation binding, image provenance, or response signatures. It does not retain the exact provider response or the original request bytes needed for signature verification. Network intermediaries trusted by the environment's TLS configuration may terminate the connection. If any inference privacy or authenticity property is required, the result is **unverified** and this generator must not be used for sensitive material. No missing evidence is converted into a positive claim.
+
+The local verifier's sandbox, evidence hashes and decision are separate from inference evidence. They do not attest the model or its output, and model attestation would not establish that the sandbox, verifier, or payout decision is correct. Chain transactions and low-entropy hashes can disclose information even if inference were verified.
+
+## Requirements before a verified mode
+
+The following is a design checklist, not a claim of implemented verification. It reflects the provider documentation reviewed on 2026-11-07; recheck it before implementation because provider behavior may change.
+
+1. Define an independently maintained trust policy for accepted gateway and model measurements, image provenance, TCB status, advisories, freshness, and algorithms. Obtain and update policy inputs through a trusted process; accepting whatever the server reports is not verification.
+2. Before sending the completion or API key, generate a fresh 32-byte nonce and request gateway evidence. For model evidence, use a canonical model ID, `provider=near`, and `x-no-aliasing: true`; require and verify every returned model candidate. Verify each Intel quote and applicable GPU evidence, nonce and signer binding, event-log replay, configuration measurement, and the chosen trust policy. Reject missing or failed evidence.
+3. If the policy requires gateway connection binding, obtain the peer certificate and nonce-bound gateway report over the **same** TLS connection, compare the peer SPKI hash with the fingerprint bound by the verified quote, and use that same connection for the completion. Repeat on reconnect. A normal certificate check or a report fetched over another connection does not establish this property.
+4. Build and retain the exact completion request bytes and uncompressed response bytes, using the canonical model ID and no aliasing when verifying a model signature. Fetch the signature with an explicit matching algorithm, verify the signature and expected hashes, and bind its signer to the correct preflight evidence. Require exactly one matching verified model report for a `provider_tee` signature; a `gateway` signature binds the gateway rather than the model. Missing, ambiguous, unsupported or late evidence is unverified. A post-completion report cannot replace preflight evidence.
+5. Retain only the evidence necessary for the policy, protecting potentially sensitive prompts, responses, identifiers and metadata. Do not put credentials in artifacts. Apply an explicit retention and disclosure policy before using non-synthetic material.
+
+Even these checks have limits: the provider notes that model instances share a signing key and that the gateway and model signature flows do not by themselves form a complete model-to-gateway-to-response chain. Attestation is not proof of model correctness or application security. Failure to verify must fail closed for any future mode that promises these properties, while the current synthetic-only mode remains explicitly unverified.
+
+Provider references: [verification overview](https://docs.near.ai/cloud/verification), [gateway attestation](https://docs.near.ai/cloud/verification/cloud-api/gateway-attestation), [model attestations](https://docs.near.ai/cloud/verification/cloud-api/model-attestations), [TLS connection binding](https://docs.near.ai/cloud/verification/cloud-api/tls), and [response signatures](https://docs.near.ai/cloud/verification/cloud-api/response-signatures).

@@ -20,8 +20,8 @@
 
 - [x] Add one deterministic generator and one independent AI-assisted approach (see the [live AI candidate run](../demo/near-ai-20261107/README.md)).
 - [ ] Integrate NEAR AI Cloud private inference with environment-based credentials and verify the relevant attestations. The API request works, but privacy and attestation have not been verified.
-- [ ] Document the exact privacy and attestation evidence checked, and behavior when it is unavailable.
-- [ ] Separate model output from the deterministic verifier and payout authorization.
+- [x] Document the exact privacy and attestation evidence checked, and behavior when it is unavailable (see [AI verification](AI-VERIFICATION.md)).
+- [x] Separate model output from the deterministic verifier and payout authorization.
 
 ## 4. Reviewer experience
 

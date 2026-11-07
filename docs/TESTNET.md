@@ -77,3 +77,5 @@ For a successful approval, inspect the transaction receipts and confirm the fina
 ## Optional AI proposal
 
 Set `NEAR_AI_API_KEY` in your local environment, and optionally `NEAR_AI_MODEL`, then run `python3 generate.py --near-ai > /tmp/patchbounty-ai-candidate.json`. This sends a fixed synthetic prompt to NEAR AI Cloud and may incur provider charges. The default `z-ai/glm-5.3-flash` was listed as ready in the public model catalog on 2026-11-05; model availability can change. The model response is validated as candidate data and must still go through the same verifier. This implementation does **not** verify gateway/model attestation, TLS connection binding or response signatures, and must not be used to assert private inference or handle sensitive material. See [NEAR's verification guide](https://docs.near.ai/cloud/verification/index).
+
+For the current checks, missing evidence and requirements for a future verified mode, see [AI verification](AI-VERIFICATION.md). HTTP failures report the status code without printing the provider response body or credential.

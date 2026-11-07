@@ -1,6 +1,6 @@
 # Architecture and trust boundaries
 
-The fixed synthetic fixture and local verifier are implemented as described in [the challenge specification](CHALLENGE.md). Candidate generators, an escrow contract and a static evidence viewer are also implemented. A [testnet deployment and payout](../demo/testnet-20261105/README.md) have been verified; live AI inference remains unverified. The list below describes the end-to-end architecture.
+The fixed synthetic fixture and local verifier are implemented as described in [the challenge specification](CHALLENGE.md). Candidate generators, an escrow contract and a static evidence viewer are also implemented. A [testnet deployment and payout](../demo/testnet-20261105/README.md) and a [live AI API request](../demo/near-ai-20261107/README.md) have been exercised; inference privacy and attestation remain unverified. The list below describes the end-to-end architecture.
 
 ## Components
 
@@ -16,6 +16,8 @@ The fixed synthetic fixture and local verifier are implemented as described in [
 The first version trusts the maintainer to define the challenge, the verifier to implement and report the predicate honestly, and the sandbox and its operator to isolate the test. The contract cannot determine whether a software vulnerability exists; it can enforce authorization and settlement against an accepted verifier result.
 
 NEAR AI inference attestation, where verified, establishes only the documented properties of that inference path. It does not attest a separate runner, guarantee complete inputs, prove model output correct, or protect information disclosed by the application or published on-chain. Follow the provider's verification policy and explicitly report unavailable evidence.
+
+The current implementation's checks, missing evidence, and requirements for a future verified mode are documented in [AI verification](AI-VERIFICATION.md).
 
 ## Execution safety
 
