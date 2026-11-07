@@ -17,7 +17,7 @@ scripts/setup.sh
 scripts/start.sh
 ```
 
-The setup script installs the pinned Rust toolchains and npm dependencies and builds the Wasm contract. Startup deploys that build to a fresh local chain and prints `http://127.0.0.1:3000`. Open that exact address in a browser. It binds only to loopback and rejects other Host and Origin values. Do not expose it as a public multiuser server.
+The setup script installs the pinned Rust toolchains and npm dependencies and builds the Wasm contract. Startup deploys that build to a fresh local chain and prints `http://127.0.0.1:3000`. Open that exact address in a browser. The operator server and local node bind only to loopback; the operator server rejects other Host and Origin values. The startup scripts preserve inherited proxy/TLS settings and keep exact loopback health checks local. Do not expose it as a public multiuser server.
 
 The local node normally requests a hard open-file limit of 65,535. On a constrained host, startup explains the limitation. For this small synthetic demo, explicitly opt into:
 
@@ -32,7 +32,7 @@ That mode compiles a temporary compatibility shim used **only by the trusted loc
 1. Click **Create challenge**, choose a title, reward and duration, and click **Fund challenge**. The configured creator deposits the reward plus the contract's 0.02 NEAR storage allowance. The app waits for finalized state.
 2. Choose **Benign sample** and **Submit claim**. Click **Run sandboxed verifier**. All three revisions allow access to Alice's own profile, so the result is ineligible. Click **Reject claim**; the contract reopens the challenge.
 3. Choose **Qualifying sample** and submit it. The verifier shows that both vulnerable revisions allow Alice to access Alice-backup's profile and that the corrected revision denies it.
-4. Inspect or download the exact evidence. Click **Approve reward payout**. The server re-verifies the candidate and evidence, binds them to the on-chain claim and specification, then signs as the dedicated verifier. It waits for finality, displays the resulting contract state, balance change and receipts, and blocks a duplicate settlement.
+4. Inspect or download the exact evidence. Click **Approve reward payout**. The server re-verifies the candidate and evidence, binds them to the on-chain claim and specification, then signs as the dedicated verifier. It waits for finality, displays the resulting contract state, balance change and receipts, and blocks a duplicate settlement. If a provider stops responding after broadcast, refresh the chain state. Signed transaction hashes are journaled before broadcast; **Recover receipts** reads the completed transaction without issuing a second approval. A recovered balance snapshot may be later than the original transfer, so use the receipts to establish the exact transfer amount.
 5. For an unapproved challenge, wait until its deadline and refresh. **Refund expired reward** returns the reward to the creator. A failed approved transfer exposes **Retry payout**, always using the recorded claimant.
 6. **Export run** downloads the full public journal. **Past runs** provides previous journals. Local chains start fresh on each launch; old journals preserve evidence rather than pretending their chains are still running. Testnet restarts resume the local journal for the same contract and roles.
 
@@ -52,7 +52,7 @@ To create fresh faucet-funded accounts and deploy the contract, run this explici
 npm --prefix contract/integration run provision:testnet
 ```
 
-It stores account keys under `~/.near-credentials/testnet` and writes its account configuration to `~/.config/patchbounty/testnet.json`, outside the repository. It prints the command to start the app. With that default configuration location:
+It stores account keys under `~/.near-credentials/testnet` and writes its account configuration to `~/.config/patchbounty/testnet.json`, outside the repository. It prints the command to start the app. Provisioning journals its progress outside the repository and reuses existing account keys and completed configuration on rerun. With that default configuration location:
 
 ```sh
 PATCHBOUNTY_TESTNET_CONFIG="$HOME/.config/patchbounty/testnet.json" scripts/start.sh --testnet-spending-authorized

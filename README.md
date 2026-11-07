@@ -8,7 +8,7 @@ The [testnet demonstration](demo/testnet-20261105/README.md) identifies the depl
 
 For a guided view of those recorded cases, open [the offline walkthrough](demo/index.html) in a browser. Select **Benign input** to see the rejected case, then **Qualifying counterexample** to see why the incomplete patch fails. The settlement panel links to the separately recorded testnet approval and replay rejection. It is a static evidence walkthrough, not a live contract interface.
 
-A [short demo recording and draft post](demo/VIDEO.md) show the same saved cases and the recorded payout.
+A [full application recording and draft post](demo/VIDEO.md) demonstrate the runnable flow. The [application testnet run](demo/app-testnet-20261107/README.md) records a fresh payout and expiry refund through the new application.
 
 ## Run the complete application
 
@@ -35,7 +35,7 @@ python3 verifier.py candidates/invalid.json
 python3 -m unittest discover -s tests -v
 ```
 
-The first candidate returns `eligible`: the vulnerable and incomplete revisions allow Alice to access Alice-backup's profile, while the corrected revision denies it. The next two return `not_eligible`. The invalid candidate returns `error` and exit code 2. A valid but ineligible candidate exits 0; check `decision`, not the exit code, for eligibility. Each successful run emits the candidate, SHA-256 identifiers, per-revision output and exit status, and the decision as JSON. Capture the JSON to retain the evidence; no evidence store or payment authorization exists yet.
+The first candidate returns `eligible`: the vulnerable and incomplete revisions allow Alice to access Alice-backup's profile, while the corrected revision denies it. The next two return `not_eligible`. The invalid candidate returns `error` and exit code 2. A valid but ineligible candidate exits 0; check `decision`, not the exit code, for eligibility. Each successful run emits the candidate, SHA-256 identifiers, per-revision output and exit status, and the decision as JSON. Capture the JSON to retain standalone CLI evidence. The application additionally keeps a persistent run journal and handles explicit escrow settlement.
 
 The runner removes inherited environment variables, disables network access in a namespace, mounts the Python runtime and system libraries read-only, uses a temporary filesystem, and applies CPU, memory, output-file and wall-time bounds. These controls reduce risk for this fixed synthetic fixture; they are not a security guarantee for arbitrary hostile code. See [the challenge specification](docs/CHALLENGE.md) for the predicate and evidence limitations.
 

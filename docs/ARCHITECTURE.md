@@ -1,6 +1,6 @@
 # Architecture and trust boundaries
 
-The fixed synthetic fixture and local verifier are implemented as described in [the challenge specification](CHALLENGE.md). Candidate generators, an escrow contract and a static evidence viewer are also implemented. A [testnet deployment and payout](../demo/testnet-20261105/README.md) and a [live AI API request](../demo/near-ai-20261107/README.md) have been exercised; inference privacy and attestation remain unverified. The list below describes the end-to-end architecture.
+The fixed synthetic fixture and local verifier are implemented as described in [the challenge specification](CHALLENGE.md). Candidate generators, an escrow contract and a static evidence viewer are also implemented. The full browser operator application is implemented as described in [application instructions](APPLICATION.md). A [testnet deployment and payout](../demo/testnet-20261105/README.md) and a [live AI API request](../demo/near-ai-20261107/README.md) have been exercised; inference privacy and attestation remain unverified. The list below describes the end-to-end architecture.
 
 ## Components
 
@@ -36,3 +36,7 @@ The implementation must specify exact state transitions, serialization and signi
 ## Privacy and evidence
 
 Keep sensitive challenge material off-chain. A public chain exposes transaction metadata, so do not claim end-to-end privacy. Hashes of low-entropy or guessable material can leak information; use an appropriate commitment scheme or avoid publishing a digest when its disclosure is unsafe. Use synthetic data in the demo.
+
+## Operator application
+
+The loopback-only Node server orchestrates three dedicated roles on the actual contract. It serializes mutations, checks Host/Origin and a per-session request token, deduplicates request IDs, binds claims to the pinned specification, and reruns the verifier before settlement. Candidate bytes, application source fingerprints, chain snapshots and public receipts are stored in ignored local journals and available as explicit exports. Testnet signing hashes are recorded before broadcast, and receipt recovery never resends an approval. Signing keys and inference credentials stay outside the browser and exported evidence. This is a single-operator local tool, not a public multiuser service.

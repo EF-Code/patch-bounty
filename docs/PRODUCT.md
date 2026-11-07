@@ -1,4 +1,4 @@
-# Product and demo scope
+# Delivered non-production product scope
 
 ## Problem
 
@@ -34,3 +34,7 @@ Arbitrary repository execution, live target scanning, production secret ingestio
 ## Success criteria
 
 A reviewer can follow reproducible instructions, inspect the exact input and revision identifiers, run the verifier, see both accepted and rejected cases, and verify a testnet payout and replay rejection. A short recorded walkthrough should show the same end-to-end flow.
+
+## Delivered application
+
+The single-operator browser application implements this flow on a real local NEAR node and supports dedicated testnet accounts. It includes explicit challenge funding, candidate review, sandbox verification, verifier settlement, expiry refunds, payout retry, exact evidence downloads and persistent run exports. See [application instructions](APPLICATION.md). Samples work without an inference key; the optional NEAR AI path is synthetic-only and makes no private-inference promise. Independent remote-user authentication and arbitrary repository execution are outside this application scope.
