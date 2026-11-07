@@ -4,17 +4,25 @@
   "type": "module",
   "scripts": {
     "build:wasm": "cargo +1.86.0 build --manifest-path ../Cargo.toml --target wasm32-unknown-unknown --release --locked && wasm-opt ../target/wasm32-unknown-unknown/release/patchbounty_escrow.wasm -o ../target/wasm32-unknown-unknown/release/patchbounty_escrow_near.wasm --enable-bulk-memory --enable-sign-ext --enable-nontrapping-float-to-int --signext-lowering --llvm-memory-copy-fill-lowering --llvm-nontrapping-fptoint-lowering",
-    "test": "node sandbox.mjs"
+    "test": "node sandbox.mjs",
+    "app": "bash ../../scripts/start.sh",
+    "test:app": "node --test app-service.test.mjs",
+    "test:browser": "node app-browser.test.mjs"
   },
   "dependencies": {
+    "near-api-js": "5.1.1",
     "near-workspaces": "5.0.0"
   },
   "devDependencies": {
-    "binaryen": "123.0.0"
+    "binaryen": "123.0.0",
+    "playwright": "1.62.1"
   },
   "overrides": {
     "near-sandbox": {
       "tar": "7.5.22"
     }
+  },
+  "engines": {
+    "node": ">=22.21.0"
   }
 }
