@@ -19,27 +19,32 @@ for arg in "$@"; do
   esac
 done
 if [[ -z ${PATCHBOUNTY_TESTNET_CONFIG:-} ]]; then
+  runtime_dir=$(mktemp -d /tmp/patchbounty-local-node-XXXXXX)
+  trap 'rm -rf -- "$runtime_dir"' EXIT
+  unset PATCHBOUNTY_NODE_LIMITS_LIBRARY
   fd_limit=$(ulimit -Hn)
   if [[ "$fd_limit" != unlimited && "$fd_limit" -lt 65535 ]]; then
     if [[ "$low_fd" != true ]]; then
       echo "The local NEAR node requests 65535 open files; this host allows $fd_limit. Use a compatible host, or explicitly run scripts/start.sh --low-fd for this small synthetic demo." >&2; exit 1
     fi
     command -v gcc >/dev/null || { echo 'The optional low-fd mode requires gcc.' >&2; exit 1; }
-    runtime_dir=$(mktemp -d /tmp/patchbounty-local-node-XXXXXX)
-    trap 'rm -rf -- "$runtime_dir"' EXIT
     gcc -shared -fPIC -O2 -Wall -o "$runtime_dir/limits.so" scripts/local-node-limits.c -ldl
-    cat > "$runtime_dir/near-sandbox" <<'WRAPPER'
-#!/usr/bin/env bash
-export LD_PRELOAD="$PATCHBOUNTY_NODE_LIMITS_LIBRARY"
-exec "$PATCHBOUNTY_NODE_BINARY" "$@"
-WRAPPER
-    chmod +x "$runtime_dir/near-sandbox"
     export PATCHBOUNTY_NODE_LIMITS_LIBRARY="$runtime_dir/limits.so"
-    export PATCHBOUNTY_NODE_BINARY="$repo_dir/contract/integration/node_modules/near-sandbox/bin/near-sandbox"
-    export NEAR_SANDBOX_BIN_PATH=1 NEAR_SANDBOX_BINARY_PATH="$runtime_dir"
     echo "Low-fd demo mode: only the local NEAR node will use the host's $fd_limit descriptor ceiling." >&2
   else
     ulimit -Sn 65535
   fi
+  cat > "$runtime_dir/near-sandbox" <<'WRAPPER'
+#!/usr/bin/env bash
+if [[ -n ${PATCHBOUNTY_NODE_LIMITS_LIBRARY:-} ]]; then export LD_PRELOAD="$PATCHBOUNTY_NODE_LIMITS_LIBRARY"; fi
+args=("$@")
+for index in "${!args[@]}"; do
+  case "${args[$index]}" in 0.0.0.0:*) args[$index]="127.0.0.1:${args[$index]#0.0.0.0:}" ;; esac
+done
+exec "$PATCHBOUNTY_NODE_BINARY" "${args[@]}"
+WRAPPER
+  chmod +x "$runtime_dir/near-sandbox"
+  export PATCHBOUNTY_NODE_BINARY="$repo_dir/contract/integration/node_modules/near-sandbox/bin/near-sandbox"
+  export NEAR_SANDBOX_BIN_PATH=1 NEAR_SANDBOX_BINARY_PATH="$runtime_dir"
 fi
 node contract/integration/app-server.mjs "${app_args[@]}"

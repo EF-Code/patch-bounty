@@ -9,3 +9,8 @@ if [[ -n ${HTTPS_PROXY:-}${HTTP_PROXY:-}${https_proxy:-}${http_proxy:-} ]]; then
     export NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
   fi
 fi
+# The NEAR sandbox health check uses 0.0.0.0. Keep exact loopback destinations local.
+for loopback_host in 0.0.0.0 127.0.0.1 localhost; do
+  case ",${NO_PROXY:-}," in *",$loopback_host,"*) ;; *) export NO_PROXY="${NO_PROXY:+$NO_PROXY,}$loopback_host" ;; esac
+  case ",${no_proxy:-}," in *",$loopback_host,"*) ;; *) export no_proxy="${no_proxy:+$no_proxy,}$loopback_host" ;; esac
+done
