@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Bounded, data-only subprocess interface for the local application."""
 import json
+import os
+from pathlib import Path
 import sys
 import generate
 import settlement
@@ -21,7 +23,7 @@ def main():
             else:
                 result = {'candidate': candidate, 'candidate_sha256': verifier.digest(settlement.canonical(candidate))}
         elif command == 'generate':
-            result = generate.near_ai()
+            result = {'candidate': generate.near_ai(), 'model': os.environ.get('NEAR_AI_MODEL', 'z-ai/glm-5.3-flash'), 'generator_sha256': verifier.digest(Path(generate.__file__).read_bytes()), 'prompt_sha256': verifier.digest(generate.PROMPT.encode()), 'attestation_verified': False, 'response_signature_verified': False}
         else:
             raise verifier.VerificationError('unsupported command')
         print(json.dumps(result, sort_keys=True))

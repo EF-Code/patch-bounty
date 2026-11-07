@@ -1,39 +1,22 @@
-# Implementation roadmap
+# Implemented project scope
 
-## 1. Fixture and verifier
+The delivered non-production application is the fixed synthetic authorization challenge, its deterministic sandbox verifier, a NEAR escrow contract, and the complete operator workflow. [Application instructions](APPLICATION.md) describe setup, local execution and dedicated testnet mode.
 
-- [x] Choose one language and a small intentionally vulnerable authorization example.
-- [x] Pin vulnerable, incomplete-fix, and corrected revisions and define one exact eligibility predicate.
-- [x] Add benign, invalid, and qualifying input cases.
-- [x] Implement a deterministic verifier and a reproducible local run with bounded execution.
-- [x] Verify that the qualifying case fails the incomplete patch and does not qualify against the corrected patch.
+- [x] Pin vulnerable, incomplete and corrected Python fixtures and enforce the exact eligibility predicate.
+- [x] Reject malformed data, fixture changes and sandbox failures without authorizing settlement.
+- [x] Run a real escrow contract locally and support dedicated testnet accounts.
+- [x] Create and fund challenges, submit claims, verify, reject or approve, retry failed transfers and refund expiry.
+- [x] Keep generation, verification and explicit settlement as separate operations.
+- [x] Provide deterministic samples and optional synthetic-only NEAR AI generation with recorded provenance and accurate failure handling.
+- [x] Provide a responsive browser interface with current finalized chain state, claim histories, evidence downloads and run exports.
+- [x] Protect the local operator API against foreign origins, missing session tokens and repeated request IDs.
+- [x] Exercise the workflow through the browser and retain testnet transaction evidence.
+- [x] Provide a reproducible build, startup preflight, automated checks, MIT license, demo assets and submission guidance.
 
-## 2. Testnet escrow
+## Deliberate boundaries
 
-- [x] Specify contract state transitions, verifier authorization, payout, expiry, refund, and callback behavior.
-- [x] Implement the contract and exercise a payout and replay rejection on a local NEAR sandbox with synthetic funds.
-- [x] Implement and deploy to NEAR testnet using dedicated test accounts.
-- [x] Test successful payout, duplicate or cross-challenge replay, wrong verifier, wrong recipient, expiry, refund, and transfer failure (unit tests plus live testnet checks; see the demo record).
-- [x] Document deployed identifiers and exact commands; never present a local mock as a deployed contract.
+This application accepts candidate JSON for one synthetic fixture. It does not promise general repository analysis, hostile-code hosting, autonomous disclosure, remote-user authentication, confidential/private inference, decentralized adjudication, NEAR Intents settlement, or mainnet operation. These are separate future products or production assurance work, rather than incomplete controls hidden in the delivered flow.
 
-## 3. Candidate generation
+The operator and verifier remain trusted. The contract is unaudited and upgradeable by its account owner. Hardware attestation for inference is not implemented or claimed; the AI path uses synthetic data only. See [architecture](ARCHITECTURE.md), [challenge safety](CHALLENGE.md), [escrow limitations](ESCROW.md), and [AI evidence](AI-VERIFICATION.md).
 
-- [x] Add one deterministic generator and one independent AI-assisted approach (see the [live AI candidate run](../demo/near-ai-20261107/README.md)).
-- [ ] Integrate NEAR AI Cloud private inference with environment-based credentials and verify the relevant attestations. The API request works, but privacy and attestation have not been verified.
-- [x] Document the exact privacy and attestation evidence checked, and behavior when it is unavailable (see [AI verification](AI-VERIFICATION.md)).
-- [x] Separate model output from the deterministic verifier and payout authorization.
-
-## 4. Reviewer experience
-
-- [x] Show challenge details, candidate input, exact revisions, evidence, verifier decision, and the recorded settlement state in a static review page.
-- [ ] Validate the [local quickstart](QUICKSTART.md) on a newly provisioned environment; it has been exercised from a clean checkout in an existing environment.
-- [ ] Record a complete demo including both rejection and accepted payout.
-- [ ] Confirm applicable hackathon instructions and track choices before submission.
-
-## Stretch goals
-
-- [ ] Experiment with a clearly labeled NEAR Intents payout on a supported network and asset, with quote expiry, status tracking, and refund handling.
-- [ ] Add a behavioral-regression challenge with a separately specified acceptance rule.
-- [ ] Investigate stronger, independently attestable sandbox execution and a review or dispute process.
-
-Never claim an unfinished or simulated component is live. Record external service and mainnet dependencies alongside local test results.
+Hackathon publication and the owner's final submission remain external to the application. Follow the [submission preparation record](SUBMISSION.md) and re-read the organizer's live instructions before sending anything.

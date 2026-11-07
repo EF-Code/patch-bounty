@@ -2,6 +2,7 @@
 set -euo pipefail
 repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$repo_dir"
+if [[ -d "$HOME/.cargo/bin" ]]; then export PATH="$HOME/.cargo/bin:$PATH"; fi
 for tool in node npm rustup cargo bwrap; do
   command -v "$tool" >/dev/null || { echo "Missing prerequisite: $tool. See docs/APPLICATION.md." >&2; exit 1; }
 done

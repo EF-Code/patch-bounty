@@ -32,13 +32,15 @@ export class Application {
   async init() {
     await fs.mkdir(this.dataDir, {recursive:true, mode:0o700});
     this.spec = await helper(this.repo, this.python, 'spec');
+    this.sources = {};
+    for (const name of ['verifier.py','generate.py','app_helper.py','contract/integration/app-service.mjs','contract/integration/app-chain.mjs','contract/integration/app-server.mjs','app/app.js','app/index.html','app/style.css']) this.sources[name] = hash(await fs.readFile(path.join(this.repo,name)));
     this.file = path.join(this.dataDir, this.chain.network === 'testnet' ? `testnet-${this.chain.contract}.json` : `${randomUUID()}.json`);
     try {
       this.data = JSON.parse(await fs.readFile(this.file, 'utf8'));
       if (this.data.contract !== this.chain.contract || this.data.codeHash !== this.chain.codeHash || JSON.stringify(this.data.roles) !== JSON.stringify(this.chain.roles)) throw Error('Saved run does not match the configured contract and roles.');
     } catch (error) {
       if (error.code !== 'ENOENT') throw error;
-      this.data = {format:'patchbounty-run-v1', id:randomUUID(), network:this.chain.network, contract:this.chain.contract, roles:this.chain.roles, codeHash:this.chain.codeHash, createdAt:new Date().toISOString(), challenges:[], events:[]};
+      this.data = {format:'patchbounty-run-v1', id:randomUUID(), network:this.chain.network, contract:this.chain.contract, roles:this.chain.roles, codeHash:this.chain.codeHash, createdAt:new Date().toISOString(), application_sources:this.sources, challenges:[], events:[]};
     }
     await this.save();
     return this;
@@ -79,6 +81,12 @@ export class Application {
       throw error;
     }
   }
+  async generate() {
+    const result = await helper(this.repo, this.python, 'generate');
+    this.event('ai_candidate_generated', result);
+    await this.save();
+    return result.candidate;
+  }
   async create(body) {
     if (typeof body.title !== 'string' || !body.title.trim() || body.title.length > 100) throw Error('Give the challenge a title of 1–100 characters.');
     if (!Number.isInteger(body.minutes) || body.minutes < 1 || body.minutes > 1440) throw Error('Duration must be 1–1440 minutes.');
@@ -97,7 +105,7 @@ export class Application {
     if (typeof raw !== 'string' || Buffer.byteLength(raw) > 4096) throw Error('A bounded candidate JSON object is required.');
     const parsed = await helper(this.repo, this.python, 'candidate', raw);
     const claim = await this.transaction('claim', 'claimant', 'submit_claim', {challenge_id:id, candidate_sha256:parsed.candidate_sha256});
-    item.attempts.push({claimId:String(claim.value), candidate:parsed.candidate, candidate_sha256:parsed.candidate_sha256, submittedAt:new Date().toISOString()});
+    item.attempts.push({claimId:String(claim.value), candidate:parsed.candidate, candidateRaw:raw, candidate_sha256:parsed.candidate_sha256, submittedAt:new Date().toISOString()});
     await this.refresh(item); await this.save(); return item;
   }
   current(item) {
@@ -112,9 +120,10 @@ export class Application {
     if (item.snapshot.state.specification_sha256 !== this.spec.sha256) throw Error('The challenge specification differs from this verifier.');
     const attempt = this.current(item);
     try {
-      const verification = await helper(this.repo, this.python, 'verify', JSON.stringify(attempt.candidate));
+      const verification = await helper(this.repo, this.python, 'verify', attempt.candidateRaw);
+      if (verification.verifier_sha256 !== this.spec.specification.verifier_sha256) throw Error('Verifier source changed since this run started.');
       if (verification.candidate_sha256 !== attempt.candidate_sha256) throw Error('Candidate digest changed.');
-      const evidence = {format:'patchbounty-evidence-v1', network:this.chain.network, contract:this.chain.contract, challenge_id:id, chain_challenge:item.snapshot.state, chain_block:item.snapshot.block, specification:this.spec.specification, verification};
+      const evidence = {format:'patchbounty-evidence-v1', network:this.chain.network, contract:this.chain.contract, challenge_id:id, chain_challenge:item.snapshot.state, chain_block:item.snapshot.block, specification:this.spec.specification, application_sources:this.sources, verification};
       const bytes = JSON.stringify(evidence, null, 2) + '\n';
       attempt.evidence = evidence; attempt.evidenceBytes = bytes; attempt.evidence_sha256 = hash(bytes); delete attempt.error;
       this.event('verified', {challenge:id, claimId:attempt.claimId, decision:verification.decision, evidence_sha256:attempt.evidence_sha256});
@@ -135,7 +144,7 @@ export class Application {
     const state = item.snapshot.state;
     if (state.specification_sha256 !== this.spec.sha256 || state.verifier !== this.chain.roles.verifier || state.claim.claimant !== this.chain.roles.claimant) throw Error('On-chain role or specification mismatch.');
     const evidence = JSON.parse(attempt.evidenceBytes);
-    const fresh = await helper(this.repo, this.python, 'verify', JSON.stringify(attempt.candidate));
+    const fresh = await helper(this.repo, this.python, 'verify', attempt.candidateRaw);
     if (JSON.stringify(evidence.verification) !== JSON.stringify(fresh) || evidence.contract !== this.chain.contract || evidence.challenge_id !== id || evidence.chain_challenge.claim.id !== attempt.claimId) throw Error('Saved evidence no longer matches an independent verification. Verify the claim again.');
     const decision = fresh.decision;
     if (!['eligible', 'not_eligible'].includes(decision)) throw Error('No valid verifier decision.');

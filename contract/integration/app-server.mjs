@@ -70,7 +70,7 @@ try {
     let result, status = 200;
     try {
       if (url === '/api/challenges') result = await app.create(data);
-      else if (url === '/api/generate') result = await helper(repo, python, 'generate');
+      else if (url === '/api/generate') result = await app.generate();
       else {
         const match = url.match(/^\/api\/challenges\/(\d+)\/(claim|verify|settle|refund|retry)$/);
         if (!match) return json(res, 404, {error:'Not found.'});

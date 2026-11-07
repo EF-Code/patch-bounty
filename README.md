@@ -1,14 +1,27 @@
 # PatchBounty
 
-PatchBounty is a proposed marketplace for challenging security patches with reproducible counterexamples. A maintainer funds a challenge, independent agents look for a test that breaks the patch, and a verifier checks the result before an escrow releases a reward.
+PatchBounty is a working non-production application for challenging a synthetic security patch with reproducible counterexamples. A maintainer funds a challenge, independent agents look for a test that breaks the patch, and a verifier checks the result before an escrow releases a reward.
 
-**Status: testnet prototype.** A synthetic fixture, deterministic sandboxed verifier, NEAR escrow contract, candidate generators, and evidence review tools are implemented. A real testnet payout, replay rejection, failed-transfer retry and expiry refund have been verified. A live NEAR AI Cloud request produced a candidate accepted by the deterministic verifier; inference attestation and response signatures were not verified. See the [run evidence](demo/near-ai-20261107/README.md).
+**Status: runnable local/testnet application.** A browser interface, challenge management, deterministic sandboxed verifier, NEAR escrow settlement, candidate generators, evidence downloads, and persistent run journals are implemented. A real testnet payout, replay rejection, failed-transfer retry and expiry refund have been verified. A live NEAR AI Cloud request produced a candidate accepted by the deterministic verifier; inference attestation and response signatures were not verified. See the [run evidence](demo/near-ai-20261107/README.md).
 
 The [testnet demonstration](demo/testnet-20261105/README.md) identifies the deployed contract, transactions and saved evidence. It uses faucet-funded testnet NEAR and a deterministic generator; it is not a production deployment.
 
 For a guided view of those recorded cases, open [the offline walkthrough](demo/index.html) in a browser. Select **Benign input** to see the rejected case, then **Qualifying counterexample** to see why the incomplete patch fails. The settlement panel links to the separately recorded testnet approval and replay rejection. It is a static evidence walkthrough, not a live contract interface.
 
 A [short demo recording and draft post](demo/VIDEO.md) show the same saved cases and the recorded payout.
+
+## Run the complete application
+
+Prerequisites: native Linux with Bubblewrap and the required namespaces, Python 3.10+, Node.js 22.21+ and Rustup.
+
+```sh
+scripts/setup.sh
+scripts/start.sh
+```
+
+Open the printed `http://127.0.0.1:3000` address. Create a challenge, submit the benign sample, verify and reject it; then submit the qualifying sample, verify and approve the reward. The app uses the actual escrow contract on a local NEAR chain with simulated funds. It waits for finalized state and lets you inspect the transfer receipts and exact evidence. On a constrained host with fewer than 65,535 allowed file descriptors, use the explicitly supported `scripts/start.sh --low-fd` demo mode.
+
+See [complete application instructions](docs/APPLICATION.md) for testnet provisioning, optional AI generation, refunds, retries, persistent evidence and browser tests. The interface is a local single-operator tool; all signing keys stay on the server. It accepts only fixed-fixture synthetic candidate data.
 
 ## Run the local verifier
 
