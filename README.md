@@ -62,6 +62,8 @@ PatchBounty was built for NEAR HACKATHON during its development window. The impl
 
 The project uses Python's standard library and Bubblewrap for the local verifier, the NEAR SDK for the Rust contract, and NEAR Workspaces and Binaryen for local contract integration tests and Wasm preparation. Dependency versions for the contract and integration harness are pinned in their lockfiles. The AI generator calls NEAR AI Cloud; its privacy properties have not been independently verified. The code is available under the [MIT License](LICENSE).
 
+The [submission preparation record](docs/SUBMISSION.md) lists the evidence, latest checks, and remaining owner actions.
+
 ## References
 
 - [NEAR documentation](https://docs.near.org/)
