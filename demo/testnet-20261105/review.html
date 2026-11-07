@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PatchBounty evidence review</title><style>
+:root{color-scheme:light;font-family:system-ui,sans-serif;color:#202938;background:#f2f5f8}
+body{max-width:1000px;margin:3rem auto;padding:0 1.25rem;line-height:1.5}
+header,.card{background:white;border:1px solid #dbe2ea;border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+h1{margin:0 0 .3rem}h2{font-size:1.1rem}p{margin:.5rem 0}code,pre{font-family:ui-monospace,monospace;overflow-wrap:anywhere}
+pre{white-space:pre-wrap;background:#f6f8fa;padding:1rem;border-radius:6px}table{width:100%;border-collapse:collapse;text-align:left}
+td,th{padding:.6rem;border-bottom:1px solid #e5eaf0;vertical-align:top}.notice{color:#715500}.decision{font-size:1.4rem;font-weight:700}
+@media(max-width:650px){table,tbody,tr,td,th{display:block}td,th{padding:.25rem 0;border:0}tr{border-bottom:1px solid #ddd;padding:.75rem 0}}
+</style></head><body><header><p>PATCHBOUNTY / EVIDENCE REVIEW</p><h1>Authorization challenge</h1>
+<p class="decision">Decision: eligible</p><p class="notice">Saved evidence, not a live settlement view. The result is a trusted verifier assertion; it is not an execution attestation.</p></header>
+<section class="card"><h2>Candidate</h2><pre>{
+  &quot;path&quot;: &quot;/accounts/alice-backup/profile&quot;,
+  &quot;user&quot;: &quot;alice&quot;
+}</pre><p>Canonical SHA-256: <code>f0369e2b5907240a45eb946587ac7f56f39d961c4a31c4c349f2378348c19830</code></p></section>
+<section class="card"><h2>Revision outcomes</h2><table><tr><th>Revision</th><th>Allowed</th><th>Fixture SHA-256</th></tr><tr><th>vulnerable</th><td>True</td><td><code>1d160ab18e7930a28fa36915eab7fefcf63245d1bd2a1156e2a50c009ffbc102</code></td></tr><tr><th>incomplete</th><td>True</td><td><code>c4086ab9f05cc3859fce88f974893641e799adbdd3467099c3ad87e1b54822a9</code></td></tr><tr><th>corrected</th><td>False</td><td><code>9ef89552a3a3bba5ac9dae0138541485703a61cefbaca7227c997d8b559e8816</code></td></tr></table>
+<p>Verifier SHA-256: <code>ec6ebda8d06f4f270055a4cd8c9cb995a44dc2ff70f13e6a58df049a9eb6c132</code></p></section>
+<section class="card"><h2>Chain snapshot</h2><p>Network: testnet · Contract: <code>escrow.pb-1793920854-24723.testnet</code> · Challenge: 0</p>
+<p>Claimant: <code>claimant.pb-1793920854-24723.testnet</code> · Verifier: <code>verifier.pb-1793920854-24723.testnet</code></p>
+<p>Recorded state at block 276408551: <strong>claimed</strong>. Check the chain for current settlement status.</p></section>
+<section class="card"><h2>Evidence</h2><p>File SHA-256: <code>65cca02d731d12079166b5a80c90b96c902d1c06e1bb43374379d53ec2366d29</code></p><details><summary>Inspect complete evidence JSON</summary><pre>{
+  &quot;chain_block&quot;: {
+    &quot;block_hash&quot;: &quot;97hT4m4Pkb7PyuohRkhfpeGskdNJf4wNygGtxGUD9X8B&quot;,
+    &quot;block_height&quot;: 276408551
+  },
+  &quot;chain_challenge&quot;: {
+    &quot;claim&quot;: {
+      &quot;candidate_sha256&quot;: &quot;f0369e2b5907240a45eb946587ac7f56f39d961c4a31c4c349f2378348c19830&quot;,
+      &quot;claimant&quot;: &quot;claimant.pb-1793920854-24723.testnet&quot;,
+      &quot;evidence_sha256&quot;: null,
+      &quot;id&quot;: &quot;1&quot;
+    },
+    &quot;creator&quot;: &quot;pb-1793920854-24723.testnet&quot;,
+    &quot;deadline_ns&quot;: &quot;1794007338049587975&quot;,
+    &quot;next_claim_id&quot;: &quot;2&quot;,
+    &quot;reward&quot;: &quot;80000000000000000000000&quot;,
+    &quot;specification_sha256&quot;: &quot;7840abdbc124b0d32e902b0d53fd994c47f5fe8bc566bfd74df35ac683ec52d1&quot;,
+    &quot;status&quot;: &quot;claimed&quot;,
+    &quot;verifier&quot;: &quot;verifier.pb-1793920854-24723.testnet&quot;
+  },
+  &quot;challenge_id&quot;: &quot;0&quot;,
+  &quot;contract&quot;: &quot;escrow.pb-1793920854-24723.testnet&quot;,
+  &quot;format&quot;: &quot;patchbounty-evidence-v1&quot;,
+  &quot;network&quot;: &quot;testnet&quot;,
+  &quot;specification&quot;: {
+    &quot;challenge&quot;: &quot;synthetic-account-prefix-v1&quot;,
+    &quot;revisions&quot;: {
+      &quot;corrected&quot;: &quot;9ef89552a3a3bba5ac9dae0138541485703a61cefbaca7227c997d8b559e8816&quot;,
+      &quot;incomplete&quot;: &quot;c4086ab9f05cc3859fce88f974893641e799adbdd3467099c3ad87e1b54822a9&quot;,
+      &quot;vulnerable&quot;: &quot;1d160ab18e7930a28fa36915eab7fefcf63245d1bd2a1156e2a50c009ffbc102&quot;
+    },
+    &quot;verifier_sha256&quot;: &quot;ec6ebda8d06f4f270055a4cd8c9cb995a44dc2ff70f13e6a58df049a9eb6c132&quot;
+  },
+  &quot;verification&quot;: {
+    &quot;candidate&quot;: {
+      &quot;path&quot;: &quot;/accounts/alice-backup/profile&quot;,
+      &quot;user&quot;: &quot;alice&quot;
+    },
+    &quot;candidate_input_sha256&quot;: &quot;80d3523779c8d184ab249b7c37280ee08ebf1bc508b6bfcbab12b3ee5744707d&quot;,
+    &quot;candidate_sha256&quot;: &quot;f0369e2b5907240a45eb946587ac7f56f39d961c4a31c4c349f2378348c19830&quot;,
+    &quot;challenge&quot;: &quot;synthetic-account-prefix-v1&quot;,
+    &quot;decision&quot;: &quot;eligible&quot;,
+    &quot;python_executable_sha256&quot;: &quot;fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7&quot;,
+    &quot;python_version&quot;: &quot;3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]&quot;,
+    &quot;revisions&quot;: {
+      &quot;corrected&quot;: {
+        &quot;allowed&quot;: false,
+        &quot;exit_code&quot;: 0,
+        &quot;sha256&quot;: &quot;9ef89552a3a3bba5ac9dae0138541485703a61cefbaca7227c997d8b559e8816&quot;,
+        &quot;stderr&quot;: &quot;&quot;,
+        &quot;stdout&quot;: &quot;{\&quot;allowed\&quot;: false}\n&quot;
+      },
+      &quot;incomplete&quot;: {
+        &quot;allowed&quot;: true,
+        &quot;exit_code&quot;: 0,
+        &quot;sha256&quot;: &quot;c4086ab9f05cc3859fce88f974893641e799adbdd3467099c3ad87e1b54822a9&quot;,
+        &quot;stderr&quot;: &quot;&quot;,
+        &quot;stdout&quot;: &quot;{\&quot;allowed\&quot;: true}\n&quot;
+      },
+      &quot;vulnerable&quot;: {
+        &quot;allowed&quot;: true,
+        &quot;exit_code&quot;: 0,
+        &quot;sha256&quot;: &quot;1d160ab18e7930a28fa36915eab7fefcf63245d1bd2a1156e2a50c009ffbc102&quot;,
+        &quot;stderr&quot;: &quot;&quot;,
+        &quot;stdout&quot;: &quot;{\&quot;allowed\&quot;: true}\n&quot;
+      }
+    },
+    &quot;sandbox&quot;: &quot;bubblewrap namespaces; CPU, memory, file-size and wall-time limits&quot;,
+    &quot;verifier_sha256&quot;: &quot;ec6ebda8d06f4f270055a4cd8c9cb995a44dc2ff70f13e6a58df049a9eb6c132&quot;
+  }
+}</pre></details></section>
+</body></html>

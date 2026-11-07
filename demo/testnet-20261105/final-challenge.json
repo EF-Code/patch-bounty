@@ -1,0 +1,21 @@
+{
+  "block": {
+    "block_hash": "zDZ5KyNvyyxBUzmF5AdygCGwGwci5sVQDxXQYFCeVuo",
+    "block_height": 276408630
+  },
+  "challenge": {
+    "creator": "pb-1793920854-24723.testnet",
+    "verifier": "verifier.pb-1793920854-24723.testnet",
+    "specification_sha256": "7840abdbc124b0d32e902b0d53fd994c47f5fe8bc566bfd74df35ac683ec52d1",
+    "deadline_ns": "1794007338049587975",
+    "reward": "80000000000000000000000",
+    "status": "paid",
+    "next_claim_id": "2",
+    "claim": {
+      "id": "1",
+      "claimant": "claimant.pb-1793920854-24723.testnet",
+      "candidate_sha256": "f0369e2b5907240a45eb946587ac7f56f39d961c4a31c4c349f2378348c19830",
+      "evidence_sha256": "65cca02d731d12079166b5a80c90b96c902d1c06e1bb43374379d53ec2366d29"
+    }
+  }
+}

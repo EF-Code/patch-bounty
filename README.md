@@ -2,7 +2,27 @@
 
 PatchBounty is a proposed marketplace for challenging security patches with reproducible counterexamples. A maintainer funds a challenge, independent agents look for a test that breaks the patch, and a verifier checks the result before an escrow releases a reward.
 
-**Status: concept and implementation plan.** This repository does not yet contain a working prototype, deployed contracts, a sandbox, or a live payment integration.
+**Status: testnet prototype.** A synthetic fixture, deterministic sandboxed verifier, NEAR escrow contract, candidate generators, and evidence review tools are implemented. A real testnet payout, replay rejection, failed-transfer retry and expiry refund have been verified. NEAR AI Cloud inference has not been tested with an account.
+
+The [testnet demonstration](demo/testnet-20261105/README.md) identifies the deployed contract, transactions and saved evidence. It uses faucet-funded testnet NEAR and a deterministic generator; it is not a production deployment.
+
+## Run the local verifier
+
+Prerequisites: Linux, Python 3.10 or newer, and `bwrap` (Bubblewrap) with unprivileged user and network namespaces enabled. The verifier requires `/usr`, `/lib`, and `/lib64` and executes only the three pinned Python fixtures. It does not accept submitted code. On systems that disallow the required namespaces, it fails closed rather than running on the host.
+
+```sh
+python3 verifier.py candidates/qualifying.json
+python3 verifier.py candidates/benign.json
+python3 verifier.py candidates/rejected.json
+python3 verifier.py candidates/invalid.json
+python3 -m unittest discover -s tests -v
+```
+
+The first candidate returns `eligible`: the vulnerable and incomplete revisions allow Alice to access Alice-backup's profile, while the corrected revision denies it. The next two return `not_eligible`. The invalid candidate returns `error` and exit code 2. A valid but ineligible candidate exits 0; check `decision`, not the exit code, for eligibility. Each successful run emits the candidate, SHA-256 identifiers, per-revision output and exit status, and the decision as JSON. Capture the JSON to retain the evidence; no evidence store or payment authorization exists yet.
+
+The runner removes inherited environment variables, disables network access in a namespace, mounts the Python runtime and system libraries read-only, uses a temporary filesystem, and applies CPU, memory, output-file and wall-time bounds. These controls reduce risk for this fixed synthetic fixture; they are not a security guarantee for arbitrary hostile code. See [the challenge specification](docs/CHALLENGE.md) for the predicate and evidence limitations.
+
+The contract's local tests run with `cargo test --manifest-path contract/Cargo.toml --locked`. The [testnet walkthrough](docs/TESTNET.md) also includes the pinned Wasm build and local NEAR sandbox integration test. The local test uses simulated funds and is not evidence of a testnet payout.
 
 ## The first demo
 
@@ -25,8 +45,9 @@ The AI proposes tests; it does not decide whether to pay. The first implementati
 - [Product and demo scope](docs/PRODUCT.md)
 - [Architecture and trust boundaries](docs/ARCHITECTURE.md)
 - [Implementation roadmap and acceptance checks](docs/ROADMAP.md)
+- [Handoff for continuing development](HANDOFF.md)
 
-Start with the vulnerable fixture and deterministic verifier, then build the testnet escrow. Do not build a general autonomous hacking platform. Use intentionally vulnerable, synthetic fixtures and only test systems for which you have authorization.
+See the [testnet walkthrough](docs/TESTNET.md) for contract builds, account prerequisites, claim verification and settlement. The optional NEAR AI generator requires an API key and may incur charges; it does not verify inference attestation. Do not build a general autonomous hacking platform. Use intentionally vulnerable, synthetic fixtures and only test systems for which you have authorization.
 
 ## Hackathon context
 

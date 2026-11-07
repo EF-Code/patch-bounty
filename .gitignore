@@ -1,0 +1,4 @@
+__pycache__/
+*.py[cod]
+contract/target/
+node_modules/

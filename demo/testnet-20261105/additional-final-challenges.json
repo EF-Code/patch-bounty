@@ -1,0 +1,39 @@
+{
+  "1": {
+    "block": {
+      "block_hash": "8upyhfGYgZ7jqdbpyensmaL26vBrbX68tbSGynMjo5gT",
+      "block_height": 276409057
+    },
+    "challenge": {
+      "creator": "pb-1793920854-24723.testnet",
+      "verifier": "verifier.pb-1793920854-24723.testnet",
+      "specification_sha256": "7840abdbc124b0d32e902b0d53fd994c47f5fe8bc566bfd74df35ac683ec52d1",
+      "deadline_ns": "1793921201642867786",
+      "reward": "10000000000000000000000",
+      "status": "refunded",
+      "next_claim_id": "1",
+      "claim": null
+    }
+  },
+  "2": {
+    "block": {
+      "block_hash": "H57Cz9eaC7NU3ZNyQtFx4YMwby5EdPQQrPto3XgAXE3b",
+      "block_height": 276409063
+    },
+    "challenge": {
+      "creator": "pb-1793920854-24723.testnet",
+      "verifier": "verifier.pb-1793920854-24723.testnet",
+      "specification_sha256": "7840abdbc124b0d32e902b0d53fd994c47f5fe8bc566bfd74df35ac683ec52d1",
+      "deadline_ns": "1793924765499804729",
+      "reward": "1000000000000000000000",
+      "status": "paid",
+      "next_claim_id": "1",
+      "claim": {
+        "id": "0",
+        "claimant": "transient.pb-1793920854-24723.testnet",
+        "candidate_sha256": "f0369e2b5907240a45eb946587ac7f56f39d961c4a31c4c349f2378348c19830",
+        "evidence_sha256": "6ee3a4e2fb248f67cd1abfc2e6fafce47b1ddba3b9e11629e59a360e5c88030c"
+      }
+    }
+  }
+}

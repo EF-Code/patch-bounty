@@ -1,0 +1,71 @@
+{
+  "chain_block": {
+    "block_hash": "97hT4m4Pkb7PyuohRkhfpeGskdNJf4wNygGtxGUD9X8B",
+    "block_height": 276408551
+  },
+  "chain_challenge": {
+    "claim": {
+      "candidate_sha256": "f0369e2b5907240a45eb946587ac7f56f39d961c4a31c4c349f2378348c19830",
+      "claimant": "claimant.pb-1793920854-24723.testnet",
+      "evidence_sha256": null,
+      "id": "1"
+    },
+    "creator": "pb-1793920854-24723.testnet",
+    "deadline_ns": "1794007338049587975",
+    "next_claim_id": "2",
+    "reward": "80000000000000000000000",
+    "specification_sha256": "7840abdbc124b0d32e902b0d53fd994c47f5fe8bc566bfd74df35ac683ec52d1",
+    "status": "claimed",
+    "verifier": "verifier.pb-1793920854-24723.testnet"
+  },
+  "challenge_id": "0",
+  "contract": "escrow.pb-1793920854-24723.testnet",
+  "format": "patchbounty-evidence-v1",
+  "network": "testnet",
+  "specification": {
+    "challenge": "synthetic-account-prefix-v1",
+    "revisions": {
+      "corrected": "9ef89552a3a3bba5ac9dae0138541485703a61cefbaca7227c997d8b559e8816",
+      "incomplete": "c4086ab9f05cc3859fce88f974893641e799adbdd3467099c3ad87e1b54822a9",
+      "vulnerable": "1d160ab18e7930a28fa36915eab7fefcf63245d1bd2a1156e2a50c009ffbc102"
+    },
+    "verifier_sha256": "ec6ebda8d06f4f270055a4cd8c9cb995a44dc2ff70f13e6a58df049a9eb6c132"
+  },
+  "verification": {
+    "candidate": {
+      "path": "/accounts/alice-backup/profile",
+      "user": "alice"
+    },
+    "candidate_input_sha256": "80d3523779c8d184ab249b7c37280ee08ebf1bc508b6bfcbab12b3ee5744707d",
+    "candidate_sha256": "f0369e2b5907240a45eb946587ac7f56f39d961c4a31c4c349f2378348c19830",
+    "challenge": "synthetic-account-prefix-v1",
+    "decision": "eligible",
+    "python_executable_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+    "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "revisions": {
+      "corrected": {
+        "allowed": false,
+        "exit_code": 0,
+        "sha256": "9ef89552a3a3bba5ac9dae0138541485703a61cefbaca7227c997d8b559e8816",
+        "stderr": "",
+        "stdout": "{\"allowed\": false}\n"
+      },
+      "incomplete": {
+        "allowed": true,
+        "exit_code": 0,
+        "sha256": "c4086ab9f05cc3859fce88f974893641e799adbdd3467099c3ad87e1b54822a9",
+        "stderr": "",
+        "stdout": "{\"allowed\": true}\n"
+      },
+      "vulnerable": {
+        "allowed": true,
+        "exit_code": 0,
+        "sha256": "1d160ab18e7930a28fa36915eab7fefcf63245d1bd2a1156e2a50c009ffbc102",
+        "stderr": "",
+        "stdout": "{\"allowed\": true}\n"
+      }
+    },
+    "sandbox": "bubblewrap namespaces; CPU, memory, file-size and wall-time limits",
+    "verifier_sha256": "ec6ebda8d06f4f270055a4cd8c9cb995a44dc2ff70f13e6a58df049a9eb6c132"
+  }
+}

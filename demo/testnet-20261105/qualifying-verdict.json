@@ -1,0 +1,16 @@
+{
+  "args": {
+    "candidate_sha256": "f0369e2b5907240a45eb946587ac7f56f39d961c4a31c4c349f2378348c19830",
+    "challenge_id": "0",
+    "claim_id": "1",
+    "evidence_sha256": "65cca02d731d12079166b5a80c90b96c902d1c06e1bb43374379d53ec2366d29"
+  },
+  "claimant": "claimant.pb-1793920854-24723.testnet",
+  "contract": "escrow.pb-1793920854-24723.testnet",
+  "decision": "eligible",
+  "evidence_file": "demo/testnet-20261105/qualifying-evidence.json",
+  "evidence_sha256": "65cca02d731d12079166b5a80c90b96c902d1c06e1bb43374379d53ec2366d29",
+  "method": "approve_claim",
+  "network": "testnet",
+  "verifier": "verifier.pb-1793920854-24723.testnet"
+}

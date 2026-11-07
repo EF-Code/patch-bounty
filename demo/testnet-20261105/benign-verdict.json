@@ -1,0 +1,14 @@
+{
+  "args": {
+    "challenge_id": "0",
+    "claim_id": "0"
+  },
+  "claimant": "claimant.pb-1793920854-24723.testnet",
+  "contract": "escrow.pb-1793920854-24723.testnet",
+  "decision": "not_eligible",
+  "evidence_file": "demo/testnet-20261105/benign-evidence.json",
+  "evidence_sha256": "296b1097ff758c88e9aa0e20ce248a2ff20e10cd50c0ffde97355b8f253b420a",
+  "method": "reject_claim",
+  "network": "testnet",
+  "verifier": "verifier.pb-1793920854-24723.testnet"
+}

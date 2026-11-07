@@ -1,6 +1,6 @@
 # Architecture and trust boundaries
 
-The components below are proposed, not implemented.
+The fixed synthetic fixture and local verifier are implemented as described in [the challenge specification](CHALLENGE.md). Candidate generators, an escrow contract and a static evidence viewer are also implemented. A [testnet deployment and payout](../demo/testnet-20261105/README.md) have been verified; live AI inference remains unverified. The list below describes the end-to-end architecture.
 
 ## Components
 
