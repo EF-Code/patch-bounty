@@ -11,5 +11,10 @@
   },
   "devDependencies": {
     "binaryen": "123.0.0"
+  },
+  "overrides": {
+    "near-sandbox": {
+      "tar": "7.5.22"
+    }
   }
 }
