@@ -4,10 +4,12 @@ This is an operator-run walkthrough for a fresh deployment. A previous live run 
 
 ## Prerequisites
 
-Install Python 3.10+, Bubblewrap with user/network namespaces, Node.js and npm, Rust and the `wasm32-unknown-unknown` target, and [NEAR CLI-RS](https://docs.near.org/tools/near-cli). Provision separate testnet accounts for the contract, creator, verifier and claimant, with sufficient testnet NEAR for deployment, deposits and gas. The commands below use NEAR CLI-RS's legacy keychain; configure it for those accounts or choose the signing method that matches your setup. Never put keys in this repository. The contract account needs enough balance for its deployed code and storage, independently of challenge deposits.
+Install Python 3.10+, Bubblewrap with user/network namespaces, Node.js and npm, Rust and the `wasm32-unknown-unknown` target, and [NEAR CLI-RS](https://docs.near.org/tools/near-cli). The pinned Wasm build uses Rust 1.86.0; the locked unit-test dependencies require Rust 1.88.0 or newer. Provision separate testnet accounts for the contract, creator, verifier and claimant, with sufficient testnet NEAR for deployment, deposits and gas. The commands below use NEAR CLI-RS's legacy keychain; configure it for those accounts or choose the signing method that matches your setup. Never put keys in this repository. The contract account needs enough balance for its deployed code and storage, independently of challenge deposits.
 
 ```sh
 rustup toolchain install 1.86.0 --profile minimal --target wasm32-unknown-unknown
+rustup toolchain install 1.88.0 --profile minimal
+cargo +1.88.0 test --manifest-path contract/Cargo.toml --locked
 cd contract/integration
 npm ci
 npm run build:wasm

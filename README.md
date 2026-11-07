@@ -28,7 +28,7 @@ The runner removes inherited environment variables, disables network access in a
 
 To create a standalone review of a successful local run, save the verifier output and render it with `python3 review.py /tmp/patchbounty-verification.json /tmp/patchbounty-review.html`. The output path must be new. This local review has no chain state; the same tool also renders the settlement evidence described in the testnet walkthrough.
 
-The contract's local tests run with `cargo test --manifest-path contract/Cargo.toml --locked`. The [testnet walkthrough](docs/TESTNET.md) also includes the pinned Wasm build and local NEAR sandbox integration test. The local test uses simulated funds and is not evidence of a testnet payout.
+The contract's local tests run with `cargo +1.88.0 test --manifest-path contract/Cargo.toml --locked`. The [testnet walkthrough](docs/TESTNET.md) also includes the pinned Wasm build and local NEAR sandbox integration test. The local test uses simulated funds and is not evidence of a testnet payout.
 
 ## The first demo
 
@@ -58,7 +58,9 @@ See the [testnet walkthrough](docs/TESTNET.md) for contract builds, account prer
 
 ## Hackathon context
 
-The initial target is NEAR HACKATHON, particularly AI Swarms, AI Security & Defense, and Agent Economy. Confirm current eligibility and submission requirements in the [official event instructions](https://nearhackathon.com/HACKATHON.md) before submitting. This repository is not itself a hackathon submission.
+PatchBounty was built for NEAR HACKATHON during its development window. The implementation is on [`work`](https://github.com/EF-Code/patch-bounty/tree/work); the repository's `main` branch contains the initial concept. Review the [change from the concept to the implementation](https://github.com/EF-Code/patch-bounty/compare/main...work). Plausible tracks include AI Security & Defense and Agent Economy; the team makes the final track selection. Confirm current eligibility and submission requirements in the [official event instructions](https://nearhackathon.com/HACKATHON.md) before submitting. This repository is not itself a hackathon submission.
+
+The project uses Python's standard library and Bubblewrap for the local verifier, the NEAR SDK for the Rust contract, and NEAR Workspaces and Binaryen for local contract integration tests and Wasm preparation. Dependency versions for the contract and integration harness are pinned in their lockfiles. The AI generator calls NEAR AI Cloud; its privacy properties have not been independently verified. The code is available under the [MIT License](LICENSE).
 
 ## References
 

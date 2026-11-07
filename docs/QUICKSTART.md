@@ -33,3 +33,5 @@ Open `review.html` in the printed temporary directory to inspect the candidate, 
 Run the Python checks with `python3 -m unittest discover -s tests -v`. They include actual sandbox runs and therefore require the same namespace support. For a NEAR testnet workflow, see the separate [testnet walkthrough](TESTNET.md); its prerequisites and use of testnet funds are different. For the optional AI generator and its unverified privacy status, see [AI verification](AI-VERIFICATION.md).
 
 The commands through the final decision check were exercised on 2026-11-07 from a fresh local clone in the existing Linux environment, using Python 3.12.14 and the installed Bubblewrap. This was a clean checkout, not a test on a newly provisioned operating system.
+
+A separate fresh `python:3.12-slim-bookworm` container with Bubblewrap returned a sandbox error under Docker's default security profile because it could not create the required namespaces. With that profile relaxed for the test, the container still could not mount `/proc`; it failed closed in both cases. A normal Docker container should therefore not be assumed to satisfy the namespace prerequisites.
