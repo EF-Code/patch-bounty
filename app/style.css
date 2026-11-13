@@ -3054,3 +3054,16 @@ textarea {
     z-index: 1;
   }
 }
+@media (max-width: 360px) {
+  .rail-section {
+    gap: 3px;
+  }
+  .rail-link {
+    padding-inline: 7px;
+    gap: 5px;
+    min-width: 0;
+  }
+  .rail-count {
+    display: none;
+  }
+}

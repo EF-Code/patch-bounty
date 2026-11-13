@@ -258,6 +258,66 @@ try {
     await checkAccessibility("refunded challenge");
     await capture("12-refunded");
   }
+  for (const width of [320, 360, 390, 768, 1024, 1280, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    if (
+      await page.evaluate(
+        () => document.documentElement.scrollWidth > innerWidth,
+      )
+    )
+      throw Error("horizontal overflow at " + width);
+  }
+  // Visual-only recovery fixtures: no fabricated chain result is used as payout evidence.
+  // Abort all browser writes while these API snapshots are supplied.
+  await page.route("**/api/challenges/**", (route) =>
+    route.request().method() === "POST" ? route.abort() : route.continue(),
+  );
+  for (const scenario of [
+    "approved",
+    "paying",
+    "refunding",
+    "refunded",
+    "missing-candidate",
+    "missing-receipt",
+  ]) {
+    const visual = structuredClone(session);
+    visual.challenges = [structuredClone(challenge)];
+    const sample = visual.challenges[0];
+    if (["refunding", "refunded"].includes(scenario)) {
+      sample.snapshot.state.status = scenario;
+      sample.snapshot.state.claim = null;
+      sample.attempts = [];
+    } else if (scenario === "missing-candidate") {
+      sample.snapshot.state.status = "claimed";
+      sample.attempts = [];
+    } else {
+      sample.snapshot.state.status =
+        scenario === "missing-receipt" ? "paid" : scenario;
+      delete sample.attempts.at(-1).settlement;
+    }
+    await page.route("**/api/session", (route) =>
+      route.fulfill({ json: visual }),
+    );
+    await page.goto("http://127.0.0.1:3007/#challenge=0&view=overview");
+    await page.reload(); // A fragment-only navigation does not refetch the mocked session.
+    await page.locator(".detail-heading").waitFor();
+    if (scenario === "approved") await page.locator("#retry").waitFor();
+    if (scenario === "missing-receipt")
+      await page.locator("#receipts").waitFor();
+    if (scenario === "missing-candidate")
+      await page
+        .getByText("The on-chain claim has no matching local candidate", {
+          exact: false,
+        })
+        .waitFor();
+    if (
+      ["refunding", "refunded"].includes(scenario) &&
+      (await page.locator(".workflow").count())
+    )
+      throw Error("refund fixture falsely shows verification steps");
+    await checkAccessibility("visual recovery fixture: " + scenario);
+    await page.unroute("**/api/session");
+  }
   if (errors.length) throw Error(errors.join("\n"));
   console.log(
     "PASS: real local-chain create, invalid input, benign rejection, eligible verification, exact payout, replay rejection, origin/token checks, keyboard tabs, draft retention, deep links, evidence download, mobile layout and automated accessibility checks.",

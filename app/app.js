@@ -165,8 +165,8 @@ function patchComparison() {
   return `<section class="patch-reference"><div class="section-heading"><h3>The patch under review</h3><span class="fixture-tag">Python</span></div><div class="patch-column"><div class="patch-label"><span class="patch-dot incomplete"></span>Incomplete check</div><pre class="patch-line removed"><code>parts[2].startswith(request["user"])</code></pre></div><div class="patch-column"><div class="patch-label"><span class="patch-dot corrected"></span>Corrected check</div><pre class="patch-line added"><code>parts[2] == request["user"]</code></pre></div><p class="context-copy">A prefix match can accept a different account. A complete match closes that edge case.</p><details class="qualification"><summary>Eligibility rules</summary><p>The target account must differ from the user. The vulnerable and incomplete revisions must allow the input; the corrected revision must deny it. Exact fixture hashes are pinned by the verifier.</p></details></section>`;
 }
 function workflow(state, current, expired) {
-  if (state.status === "refunded")
-    return `<div class="closed-workflow">${icon("clock")}Closed after expiry. The reward was returned to the creator.</div>`;
+  if (["refunding", "refunded"].includes(state.status))
+    return `<div class="closed-workflow">${icon("clock")}${state.status === "refunded" ? "Closed after expiry. The reward was returned to the creator." : "Refund requested. Waiting for the transfer callback."}</div>`;
   const complete = state.status === "paid";
   const stage = complete
     ? 3
@@ -243,7 +243,12 @@ function evidenceView(item) {
   );
 }
 function activityView(item) {
-  return `<div class="section-heading"><div><h3>Challenge activity</h3><p>Recorded actions from this operator run.</p></div></div><ol class="activity"><li><span class="activity-icon">${icon("lock")}</span><div><strong>Challenge funded</strong><p>${esc(near(item.snapshot.state.reward))} NEAR reward held in escrow.</p><time>${esc(date(item.createdAt))}</time></div></li>${item.attempts.map((a) => `<li><span class="activity-icon">${icon("code")}</span><div><strong>Claim #${esc(a.claimId)} submitted</strong><p>${esc(a.candidate.path)}</p><time>${esc(date(a.submittedAt))}</time></div></li>${a.evidence ? `<li><span class="activity-icon ${a.evidence.verification.decision === "eligible" ? "positive" : ""}">${icon("shield")}</span><div><strong>Verifier returned ${a.evidence.verification.decision === "eligible" ? "eligible" : "not eligible"}</strong><p>Three pinned revisions checked in the sandbox.</p></div></li>` : ""}${a.settlement ? `<li><span class="activity-icon positive">${icon("check")}</span><div><strong>${a.settlement.method === "approve_claim" ? "Reward approval recorded" : "Claim rejected"}</strong><p>Public transaction receipt saved with the evidence.</p></div></li>` : ""}`).join("")}</ol>`;
+  const refundActivity = ["refunding", "refunded"].includes(
+    item.snapshot.state.status,
+  )
+    ? `<li><span class="activity-icon">${icon("clock")}</span><div><strong>${item.snapshot.state.status === "refunded" ? "Reward refunded" : "Refund requested"}</strong><p>${item.snapshot.state.status === "refunded" ? "Finalized contract state confirms the refund callback." : "Waiting for the contract’s refund callback."}</p></div></li>`
+    : "";
+  return `<div class="section-heading"><div><h3>Challenge activity</h3><p>Recorded actions from this operator run.</p></div></div><ol class="activity"><li><span class="activity-icon">${icon("lock")}</span><div><strong>Challenge funded</strong><p>${esc(near(item.snapshot.state.reward))} NEAR reward held in escrow.</p><time>${esc(date(item.createdAt))}</time></div></li>${item.attempts.map((a) => `<li><span class="activity-icon">${icon("code")}</span><div><strong>Claim #${esc(a.claimId)} submitted</strong><p>${esc(a.candidate.path)}</p><time>${esc(date(a.submittedAt))}</time></div></li>${a.evidence ? `<li><span class="activity-icon ${a.evidence.verification.decision === "eligible" ? "positive" : ""}">${icon("shield")}</span><div><strong>Verifier returned ${a.evidence.verification.decision === "eligible" ? "eligible" : "not eligible"}</strong><p>Three pinned revisions checked in the sandbox.</p></div></li>` : ""}${a.settlement ? `<li><span class="activity-icon positive">${icon("check")}</span><div><strong>${a.settlement.method === "approve_claim" ? "Reward approval recorded" : "Claim rejected"}</strong><p>Public transaction receipt saved with the evidence.</p></div></li>` : ""}`).join("")}${refundActivity}</ol>`;
 }
 function renderDetail() {
   const item = session.challenges.find((c) => c.id === selected);
