@@ -5,3 +5,6 @@ node_modules/
 .patchbounty/
 .env
 .env.*
+
+# Local review helper with no upstream distribution license in this snapshot.
+.agents/skills/web-design-guidelines/

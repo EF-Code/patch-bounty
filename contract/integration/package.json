@@ -15,6 +15,7 @@
     "near-workspaces": "5.0.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
     "binaryen": "123.0.0",
     "playwright": "1.62.1"
   },

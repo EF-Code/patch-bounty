@@ -8,3 +8,5 @@
 - Preserve exact revision, fixture, verifier, and execution evidence for every result. Never equate private inference attestation with proof that the sandbox, application, or AI judgment is correct.
 - Keep credentials out of the repository. Do not deploy to mainnet or spend funds without the owner's authorization.
 - Run meaningful checks for changes and report what was and was not verified.
+
+- For frontend design changes, follow [.agents/skills/frontend-design/SKILL.md](.agents/skills/frontend-design/SKILL.md) and [the UI direction](docs/design/UI-DIRECTION.md). Preserve the escrow API and the separate, explicit settlement action.
