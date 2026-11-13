@@ -1,6 +1,6 @@
 # Demo recordings
 
-[Play the complete application workflow](patchbounty-app-demo.mp4). This 36-second silent screen recording shows actual challenge creation, a benign rejection, sandbox verification of a qualifying input, and settlement on a real local NEAR node using simulated funds. It is local-chain execution, not a testnet recording. The separate [testnet application journal](app-testnet-20261107/README.md) proves the application was also exercised on testnet.
+[Play the complete application workflow](patchbounty-app-demo.mp4). This 38-second silent screen recording of the redesigned interface shows actual challenge creation, a benign rejection, sandbox verification of a qualifying input, and settlement on a real local NEAR node using simulated funds. It is local-chain execution, not a testnet recording. The separate [testnet application journal](app-testnet-20261107/README.md) proves the application was also exercised on testnet.
 
 Screenshots: [verification](app-verification.png), [paid reward](app-paid.png), [mobile](app-mobile.png).
 

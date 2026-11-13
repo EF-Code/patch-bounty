@@ -8,7 +8,7 @@ Captured the empty workspace, funding dialog and a funded challenge on the actua
 
 ## Design plan
 
-- Palette: ink `#1D253E`, canvas `#F5F6FA`, white `#FFFFFF`, action blue `#4D5FEF`, muted text `#69738C`, confirmation green `#16734F`.
+- Palette: ink `#1D253E`, canvas `#F5F6FA`, white `#FFFFFF`, action blue `#4D5FEF`, muted text `#5F6B84`, confirmation green `#16734F`.
 - Typography: self-hosted Instrument Sans for the interface and IBM Plex Mono only for code and exact identifiers. Sentence-case labels, no decorative eyebrow labels or oversized marketing headline.
 - Layout: a quiet ink navigation rail, a compact workspace heading, a challenge index and a spacious review surface. Left alignment throughout. An actual patch comparison provides the visual identity, rather than illustration or decoration unrelated to the task.
 
@@ -32,3 +32,7 @@ A generic dashboard with decorative summary cards would repeat the initial probl
 Preserve APIs, exact evidence and explicit payment authorization. Keep secrets off the client, retain synthetic-only AI messaging, and preserve all error and recovery states. Verify empty, funding, proposal, error, verified, paid, refund, archive, evidence and mobile views; run the real local-chain browser test. Honor reduced motion, visible keyboard focus, accessible dialogs/tabs, and narrow screens.
 
 Installed design guidance: `.agents/skills/frontend-design`, copied with its Apache 2.0 license from anthropics/skills commit `2c5958ecac7cee2b583967a2c4981d0f4a75c579`. Fonts are self-hosted with their OFL licenses; the app makes no font-service request at runtime.
+
+## Outcome
+
+The implemented review workspace and checks are recorded in [UI verification](UI-QA.md). Feedback is positioned away from actions; hashes and receipts live in the Evidence view. The run summary was reduced to quiet inline counts rather than large generic dashboard metrics.

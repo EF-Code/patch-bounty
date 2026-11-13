@@ -10,6 +10,8 @@ For a guided view of those recorded cases, open [the offline walkthrough](demo/i
 
 A [full application recording and draft post](demo/VIDEO.md) demonstrate the runnable flow. The [application testnet run](demo/app-testnet-20261107/README.md) records a fresh payout and expiry refund through the new application.
 
+![PatchBounty verification workspace](demo/app-verification.png)
+
 ## Run the complete application
 
 Prerequisites: native Linux with Bubblewrap and the required namespaces, Python 3.10+, Node.js 22.21+ and Rustup.
@@ -83,3 +85,5 @@ The [submission preparation record](docs/SUBMISSION.md) lists the evidence, late
 - [NEAR AI Cloud private inference](https://docs.near.ai/cloud/private-inference)
 - [NEAR AI Cloud verification](https://docs.near.ai/cloud/verification/index)
 - [NEAR Intents 1Click request flow](https://docs.near-intents.org/integration/distribution-channels/1click-api/quickstart/making-a-request)
+
+The frontend uses self-hosted Instrument Sans and IBM Plex Mono under their included OFL licenses. The [UI verification record](docs/design/UI-QA.md) covers the redesign, keyboard interactions, responsive layout and automated accessibility checks.

@@ -19,6 +19,10 @@ This is a preparation record, not a submission. The live [organizer instructions
 - The integration harness's `tar` dependency was updated after an npm audit; a clean install and the local sandbox test passed afterwards. The remaining audit reported 13 low-severity package entries in that test toolchain and no high or critical entries. See the [testnet walkthrough](TESTNET.md) for scope and limitations.
 - The full browser test started a real local chain and checked challenge creation, malformed input, benign rejection, eligible verification, exact payout, replay rejection, origin/session protections, reloads and mobile width. The application is now interactive; the earlier static walkthrough remains a historical evidence viewer.
 
+## Frontend refresh on 2026-11-13
+
+The application UI, screenshots and full workflow recording were refreshed before the submission deadline. The local-chain browser test now covers accessible tabs, inline validation, preserved drafts, evidence downloads, responsive widths and automated accessibility checks. The actual expiry/refund screen was also checked. See [UI verification](design/UI-QA.md) for evidence and limits. No new testnet deployment was needed for the visual change.
+
 ## Remaining owner actions
 
 1. Review the video and organizer rules, and personally publish the required public X post with the video attached, including `@NEARProtocol` and `#NEARHackathon`. A [post draft](../demo/VIDEO.md) is available. Supply the post URL for the submission.
